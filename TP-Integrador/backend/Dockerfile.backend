@@ -1,0 +1,26 @@
+# ── Stage 1: compilación ──────────────────────────────────────────────────────
+FROM maven:3.9-eclipse-temurin-21-alpine AS builder
+
+WORKDIR /app
+
+# Copiamos el pom primero para aprovechar la caché de dependencias de Docker
+COPY pom.xml .
+RUN mvn dependency:go-offline -q
+
+# Copiamos el código fuente y compilamos
+COPY src ./src
+RUN mvn package -q -DskipTests
+
+# ── Stage 2: imagen final liviana ─────────────────────────────────────────────
+FROM eclipse-temurin:21-jre-alpine
+
+WORKDIR /app
+
+COPY --from=builder /app/target/vision-backend.jar vision-backend.jar
+
+EXPOSE 3001
+
+HEALTHCHECK --interval=10s --timeout=5s --retries=3 \
+  CMD wget -qO- http://localhost:3001/health || exit 1
+
+CMD ["java", "-jar", "vision-backend.jar"]
