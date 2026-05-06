@@ -3,6 +3,11 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
+    develop:
+      watch:
+        - action: sync+restart
+          path: ./frontend/index.html
+          target: /usr/share/nginx/html/index.html
     ports:
       - "8080:80"
     # depends_on:
@@ -22,3 +27,18 @@ services:
       interval: 10s
       timeout: 5s
       retries: 3
+
+  worker:
+    build:
+      context: ./worker
+      dockerfile: Dockerfile
+    develop:
+      watch:
+        - action: sync+restart
+          path: ./worker
+          target: /app
+          ignore:
+            - __pycache__/
+            - .venv/
+            - .git/
+    restart: unless-stopped
