@@ -1,0 +1,24 @@
+services:
+  frontend:
+    build:
+      context: .
+      dockerfile: ./frontend/dockerfile
+    ports:
+      - "8080:80"
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+  backend:
+    # Reemplazá con el contexto real de tu backend cuando lo tengas
+    # build:
+    #   context: ./backend
+    #   dockerfile: Dockerfile
+    image: node:20-alpine # placeholder — reemplazar por tu imagen/build
+    working_dir: /app
+    command: ["node", "index.js"] # placeholder — reemplazar por tu comando de arranque
+    volumes:
+      - ./backend:/app # placeholder — reemplazar por tu carpeta de backend
+    ports:
+      - "3001:3001"
+    restart: unless-stopped
