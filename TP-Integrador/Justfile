@@ -1,0 +1,71 @@
+# Grupo M4 — Vision AI
+# Uso: just <comando>
+# Instalacion: winget install Casey.Just
+
+# Muestra esta ayuda por defecto
+default:
+    @just --list --unsorted
+
+# Levanta frontend + backend juntos
+up:
+    docker compose up --build -d
+    @echo ""
+    @echo "  Frontend → http://localhost:8080"
+    @echo "  Backend  → http://localhost:3001"
+    @echo ""
+
+# Detiene y elimina los contenedores
+down:
+    docker compose down
+
+# Levanta solo el frontend → http://localhost:8080
+front:
+    docker compose up --build -d frontend
+    @echo "Frontend → http://localhost:8080"
+
+# Modo desarrollo del frontend: sincroniza cambios y reinicia sin rebuild
+front-dev:
+    docker compose up -d frontend
+    docker compose watch frontend
+
+# Reinicia frontend sin rebuild (manual)
+front-restart:
+    docker compose restart frontend
+    @echo "Frontend restarted"
+
+# Levanta solo el backend → http://localhost:3001
+back:
+    docker compose up --build -d backend
+    @echo "Backend → http://localhost:3001"
+
+# Levanta solo el worker
+worker:
+    docker compose up -d worker
+    @echo "Worker started"
+
+# Reconstruye y levanta solo el worker
+worker-build:
+    docker compose up --build -d worker
+    @echo "Worker rebuilt and started"
+
+# Modo desarrollo del worker: sincroniza cambios y reinicia sin rebuild
+worker-dev:
+    docker compose up -d worker
+    docker compose watch worker
+
+# Reinicia worker sin rebuild (manual)
+worker-restart:
+    docker compose restart worker
+    @echo "Worker restarted"
+
+# Muestra los logs en tiempo real
+logs:
+    docker compose logs -f
+
+# Reconstruye todas las imágenes desde cero
+build:
+    docker compose build --no-cache
+
+# Elimina contenedores, imágenes y caché del proyecto
+clean:
+    docker compose down --rmi local --volumes --remove-orphans
