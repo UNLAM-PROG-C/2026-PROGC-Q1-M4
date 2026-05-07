@@ -19,6 +19,8 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile.backend
+    volumes:
+      - ./ipc:/ipc:rw
     ports:
       - "3001:3001"
     restart: unless-stopped
@@ -42,3 +44,5 @@ services:
             - .venv/
             - .git/
     restart: unless-stopped
+    volumes:
+      - ./ipc:/ipc:rw
