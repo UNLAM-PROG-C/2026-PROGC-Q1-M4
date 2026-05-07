@@ -127,6 +127,7 @@
         border-radius: 50%;
         background: var(--neon2);
         animation: blink-dot 1.4s ease-in-out infinite;
+        transition: background 0.5s ease;
       }
       .ai-dot:nth-child(2) {
         animation-delay: 0.2s;
@@ -135,6 +136,22 @@
       .ai-dot:nth-child(3) {
         animation-delay: 0.4s;
         background: var(--neon4);
+      }
+
+      .ai-indicator.offline .ai-dot {
+        background: #475569 !important;
+        animation: none;
+        opacity: 0.4;
+      }
+      .ai-indicator.offline .ai-label {
+        color: #475569;
+      }
+      .ai-indicator.checking .ai-dot {
+        background: #fbbf24 !important;
+        animation: blink-dot 0.6s ease-in-out infinite;
+      }
+      .ai-indicator.checking .ai-label {
+        color: #92400e;
       }
 
       @keyframes blink-dot {
@@ -155,6 +172,7 @@
         color: #64748b;
         letter-spacing: 0.1em;
         text-transform: uppercase;
+        transition: color 0.5s ease;
       }
 
       .drop-zone {
@@ -257,10 +275,6 @@
         display: none;
       }
 
-      #preview-actions-container {
-        display: none;
-      }
-
       #preview {
         max-width: 100%;
         max-height: 320px;
@@ -280,7 +294,6 @@
         display: flex;
         gap: 0.8rem;
         justify-content: center;
-
         margin-top: 1rem;
       }
 
@@ -314,25 +327,11 @@
         box-shadow: 0 0 12px rgba(52, 211, 153, 0.3);
       }
 
-      .btn-analyze {
-        padding: 0.4rem 1.4rem;
-        border-radius: 8px;
-        border: 1px solid rgba(52, 211, 153, 0.4);
-        background: rgba(52, 211, 153, 0.1);
-        color: var(--neon2);
-        font-size: 0.85rem;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.2s;
-        letter-spacing: 0.05em;
-      }
-      .btn-analyze:hover {
-        background: rgba(52, 211, 153, 0.2);
-        box-shadow: 0 0 16px rgba(52, 211, 153, 0.3);
-      }
-      .btn-analyze:disabled {
-        opacity: 0.4;
-        cursor: not-allowed;
+      .preview-actions {
+        display: flex;
+        gap: 0.8rem;
+        justify-content: center;
+        margin-top: 1rem;
       }
 
       .analyze-btn-main {
@@ -674,11 +673,11 @@
         <p class="subtitle">
           Reconocimiento de objetos con Inteligencia Artificial
         </p>
-        <div class="ai-indicator">
+        <div class="ai-indicator checking" id="aiIndicator">
           <div class="ai-dot"></div>
           <div class="ai-dot"></div>
           <div class="ai-dot"></div>
-          <span class="ai-label">Motor de IA activo</span>
+          <span class="ai-label" id="aiLabel">Verificando motor...</span>
         </div>
       </header>
 
@@ -689,14 +688,18 @@
           <p class="drop-sub">O hacé clic para explorar archivos</p>
           <span class="drop-hint" id="browseBtn">Seleccionar archivo</span>
         </div>
-        <div id="preview-container">
+        <div id="preview-container" style="display: none">
           <img id="preview" src="" alt="Preview" />
           <p class="preview-name" id="previewName"></p>
         </div>
         <input type="file" id="fileInput" accept="image/*" />
       </div>
 
-      <div class="preview-actions" id="preview-actions-container">
+      <div
+        class="preview-actions"
+        id="preview-actions-container"
+        style="display: none"
+      >
         <button class="btn-load" id="loadAnotherBtn">
           📁 Cargar otra imagen
         </button>
@@ -909,6 +912,9 @@
       const preview = document.getElementById("preview");
       const previewName = document.getElementById("previewName");
       const previewContainer = document.getElementById("preview-container");
+      const previewActions = document.getElementById(
+        "preview-actions-container",
+      );
       const dropPlaceholder = document.getElementById("drop-placeholder");
       const analyzeBtn = document.getElementById("analyzeBtn");
 
@@ -923,20 +929,13 @@
           file.name + " (" + (file.size / 1024).toFixed(1) + " KB)";
         dropPlaceholder.style.display = "none";
         previewContainer.style.display = "block";
-        document.getElementById("preview-actions-container").style.display =
-          "flex";
+        previewActions.style.display = "flex";
         dropZone.classList.add("has-image");
         analyzeBtn.disabled = false;
         showIdle();
       }
 
       dropZone.addEventListener("click", (e) => {
-        // No abrir file input si se hizo click en un botón de acción
-        if (
-          e.target.closest("#clearBtn") ||
-          e.target.closest("#loadAnotherBtn")
-        )
-          return;
         if (currentFile) return;
         if (
           e.target === browseBtn ||
@@ -967,24 +966,19 @@
         if (file) loadImage(file);
       });
 
-      clearBtn.addEventListener("click", (e) => {
-        e.stopPropagation();
+      clearBtn.addEventListener("click", () => {
         currentFile = null;
         preview.src = "";
         fileInput.value = "";
         dropPlaceholder.style.display = "block";
         previewContainer.style.display = "none";
-        document.getElementById("preview-actions-container").style.display =
-          "none";
+        previewActions.style.display = "none";
         dropZone.classList.remove("has-image");
         analyzeBtn.disabled = true;
         showIdle();
       });
 
-      loadAnotherBtn.addEventListener("click", (e) => {
-        e.stopPropagation();
-        fileInput.click();
-      });
+      loadAnotherBtn.addEventListener("click", () => fileInput.click());
 
       function showIdle() {
         document.getElementById("idleState").style.display = "flex";
@@ -1159,6 +1153,42 @@
       document.getElementById("loadingState").style.display = "none";
       document.getElementById("resultsState").style.display = "none";
       document.getElementById("errorState").style.display = "none";
+
+      // ── Health check ───────────────────────────────────────────────────────────────
+      const aiIndicator = document.getElementById("aiIndicator");
+      const aiLabel = document.getElementById("aiLabel");
+      const HEALTH_URL = "http://localhost:3001/health";
+      const POLL_INTERVAL = 10000; // cada 10 segundos
+
+      function setAiStatus(status) {
+        aiIndicator.classList.remove("checking", "offline");
+        if (status === "checking") {
+          aiIndicator.classList.add("checking");
+          aiLabel.textContent = "Verificando motor...";
+        } else if (status === "online") {
+          aiLabel.textContent = "Motor de IA activo";
+        } else {
+          aiIndicator.classList.add("offline");
+          aiLabel.textContent = "Motor de IA apagado";
+        }
+      }
+
+      async function checkHealth() {
+        try {
+          const res = await fetch(HEALTH_URL, {
+            signal: AbortSignal.timeout(4000),
+          });
+          const data = await res.json();
+          setAiStatus(data.status === "ok" ? "online" : "offline");
+        } catch {
+          setAiStatus("offline");
+        }
+      }
+
+      // Primera verificación al cargar
+      checkHealth();
+      // Polling periódico
+      setInterval(checkHealth, POLL_INTERVAL);
     </script>
   </body>
 </html>

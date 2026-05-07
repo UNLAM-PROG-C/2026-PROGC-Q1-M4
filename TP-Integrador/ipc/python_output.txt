@@ -1,0 +1,2 @@
+Promedio: 3.0
+Array: [1 2 3 4 5]
