@@ -1,0 +1,113 @@
+%%writefile ejercicio1.c
+#include <stdlib.h>
+#include <stdio.h>
+#include <unistd.h>
+#include <sys/wait.h>
+
+typedef struct Node
+{
+    char name;
+    struct Node *first_child;
+    struct Node *next_sibling;
+} Node;
+
+void processMessage(Node *node);
+Node *create_node(char name);
+void add_child(Node *parent, Node *child);
+Node *create_tree();
+int print_tree(Node *node);
+
+int main(int argc, char *argv[])
+{
+    setbuf(stdout, NULL);
+    Node *root_node = create_tree();
+    return print_tree(root_node);
+}
+
+void processMessage(Node *node)
+{
+    printf("Hola mi nombre es %c | PID: %d | P_PID: %d\n", node->name, getpid(), getppid());
+}
+
+Node *create_node(char name) {
+    Node *n = malloc(sizeof(Node));
+
+    n->name = name;
+    n->first_child = NULL;
+    n->next_sibling = NULL;
+
+    return n;
+}
+
+void add_child(Node *parent, Node *child) {
+    if (!parent->first_child) {
+        parent->first_child = child;
+    } else {
+        Node *current = parent->first_child;
+
+        while (current->next_sibling) {
+            current = current->next_sibling;
+        }
+
+        current->next_sibling = child;
+    }
+}
+
+Node *create_tree() {
+    Node *node_a = create_node('A');
+    Node *node_b = create_node('B');
+    Node *node_c = create_node('C');
+    Node *node_d = create_node('D');
+    Node *node_e = create_node('E');
+    Node *node_f = create_node('F');
+    Node *node_g = create_node('G');
+    Node *node_h = create_node('H');
+    Node *node_i = create_node('I');
+
+    add_child(node_a, node_b);
+    add_child(node_b, node_c);
+    add_child(node_b, node_d);
+    add_child(node_c, node_e);
+    add_child(node_d, node_f);
+    add_child(node_d, node_g);
+    add_child(node_e, node_h);
+    add_child(node_e, node_i);
+
+    return node_a;
+}
+
+int print_tree(Node *node) {
+    if (!node) return EXIT_SUCCESS;
+
+    processMessage(node);
+
+    Node *child = node->first_child;
+    int pid = 0;
+
+    while (child)
+    {
+      pid = fork();
+
+      if (pid == -1)
+      {
+          perror("fork");
+          exit(EXIT_FAILURE);
+      }
+      else if(pid == 0)
+      {
+          print_tree(child);
+          sleep(50);
+          return EXIT_SUCCESS;
+      }
+      child = child->next_sibling;
+    }
+
+    child = node->first_child;
+    while (child)
+    {
+        wait(NULL);
+        child = child->next_sibling;
+    }
+
+    return EXIT_SUCCESS;
+}
