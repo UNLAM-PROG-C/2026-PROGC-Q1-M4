@@ -2,9 +2,6 @@ package com.m4;
 
 import com.sun.net.httpserver.HttpServer;
 import java.net.InetSocketAddress;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.charset.StandardCharsets;
 
 public class Main {
     private static final int DEFAULT_PORT = 3001;

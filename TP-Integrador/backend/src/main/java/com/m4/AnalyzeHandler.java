@@ -1,11 +1,7 @@
 package com.m4;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.TimeUnit;
-import java.nio.charset.StandardCharsets;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
-
+import java.net.HttpURLConnection;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
@@ -13,11 +9,7 @@ import java.nio.charset.StandardCharsets;
 public class AnalyzeHandler implements HttpHandler {
 
     private final RabbitPublisher publisher = new RabbitPublisher();
-    private static final int ERROR_CODE_QUEUE = 500;
-    private static final int ERROR_CODE_IMAGE = 500;
-    private static final int ERROR_CODE_METHOD = 405;
-    private static final int OK_CODE = 200; 
-    private static final int OPTIONS_NO_CONTENT = 204;
+    private static final int NO_BODY = -1;
 
     @Override
     public void handle(HttpExchange exchange) throws IOException {
@@ -26,12 +18,12 @@ public class AnalyzeHandler implements HttpHandler {
         exchange.getResponseHeaders().add("Access-Control-Allow-Headers", "Content-Type");
 
         if ("OPTIONS".equalsIgnoreCase(exchange.getRequestMethod())) {
-            exchange.sendResponseHeaders(OPTIONS_NO_CONTENT, -1);
+            exchange.sendResponseHeaders(HttpURLConnection.HTTP_NO_CONTENT, NO_BODY);
             return;
         }
 
         if (!"POST".equalsIgnoreCase(exchange.getRequestMethod())) {
-            sendResponse(exchange, ERROR_CODE_METHOD, "{\"error\":\"Method not allowed\"}");
+            sendResponse(exchange, HttpURLConnection.HTTP_BAD_METHOD, "{\"error\":\"Method not allowed\"}");
             return;
         }
 
@@ -39,7 +31,7 @@ public class AnalyzeHandler implements HttpHandler {
             byte[] body = exchange.getRequestBody().readAllBytes();
 
             if (body.length == 0) {
-                sendResponse(exchange, ERROR_CODE_IMAGE, "{\"error\":\"No se recibió ninguna imagen\"}");
+                sendResponse(exchange, HttpURLConnection.HTTP_INTERNAL_ERROR, "{\"error\":\"No se recibió ninguna imagen\"}");
                 return;
             }
 
@@ -49,11 +41,11 @@ public class AnalyzeHandler implements HttpHandler {
             // DESPUÉS:
             String result = publisher.waitQueue(body);
             exchange.getResponseHeaders().add("Content-Type", "application/json; charset=utf-8");
-            sendResponse(exchange, OK_CODE, result);
+            sendResponse(exchange, HttpURLConnection.HTTP_OK, result);
 
         } catch (Exception e) {
             e.printStackTrace();
-            sendResponse(exchange, ERROR_CODE_QUEUE, "{\"error\":\"Error publicando en la cola\"}");
+            sendResponse(exchange, HttpURLConnection.HTTP_INTERNAL_ERROR, "{\"error\":\"Error publicando en la cola\"}");
         }
     }
 
