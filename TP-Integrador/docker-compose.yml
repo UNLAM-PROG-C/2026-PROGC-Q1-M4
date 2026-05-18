@@ -11,9 +11,9 @@ services:
           target: /usr/share/nginx/html/index.html
     ports:
       - "8080:80"
-    depends_on:
-      backend:
-        condition: service_healthy
+    #depends_on:
+      #backend:
+        #condition: service_healthy
     restart: unless-stopped
  
   backend:

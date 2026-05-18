@@ -59,21 +59,26 @@ public class RabbitPublisher {
 
             BlockingQueue<String> response = new ArrayBlockingQueue<>(1);
 
-            String consumerTag = channel.basicConsume(replyQueue, true,
-                (tag, delivery) -> {
-                    if (correlationId.equals(delivery.getProperties().getCorrelationId())) {
-                        System.out.println("Respuesta del worker consumida de la cola. Respuesta: " + new String(delivery.getBody(), StandardCharsets.UTF_8));
-                        response.offer(new String(delivery.getBody(), StandardCharsets.UTF_8));
-                    }
-                },
-                tag -> {}
-            );
+            String consumerTag = cosumeResult(channel, replyQueue, correlationId, response);
 
-            String result = response.poll(90, TimeUnit.SECONDS);
+            String result = response.poll(90, TimeUnit.SECONDS); # Timeout de 90 segundos para esperar resultado del worker
             channel.basicCancel(consumerTag);
 
             if (result == null) throw new RuntimeException("Timeout esperando resultado del worker");
             return result;
         }
+    }
+
+    static private String cosumeResult(Channel channel, String replyQueue, String correlationId, BlockingQueue<String> response) throws Exception {
+        String consumerTag = channel.basicConsume(replyQueue, true,
+                    (tag, delivery) -> {
+                        if (correlationId.equals(delivery.getProperties().getCorrelationId())) {
+                            System.out.println("Respuesta del worker consumida de la cola. Respuesta: " + new String(delivery.getBody(), StandardCharsets.UTF_8));
+                            response.offer(new String(delivery.getBody(), StandardCharsets.UTF_8));
+                        }
+                    },
+                    tag -> {}
+                );
+        return consumerTag;
     }
 }                   
