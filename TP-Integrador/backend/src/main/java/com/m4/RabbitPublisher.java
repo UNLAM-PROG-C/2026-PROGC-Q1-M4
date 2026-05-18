@@ -16,6 +16,8 @@ public class RabbitPublisher {
 
     private static final String QUEUE_NAME  = "image_queue";
     private static final String RESULT_QUEUE = "result_queue";
+    private static final int TIMEOUT_SECONDS = 90;
+    private static final int BLOCKRESPONSE_QUEUE_SIZE = 1;
 
     private final ConnectionFactory factory;
 
@@ -57,11 +59,11 @@ public class RabbitPublisher {
 
             channel.basicPublish("", QUEUE_NAME, props, imageBytes);
 
-            BlockingQueue<String> response = new ArrayBlockingQueue<>(1);
+            BlockingQueue<String> response = new ArrayBlockingQueue<>(BLOCKRESPONSE_QUEUE_SIZE);
 
             String consumerTag = cosumeResult(channel, replyQueue, correlationId, response);
 
-            String result = response.poll(90, TimeUnit.SECONDS); # Timeout de 90 segundos para esperar resultado del worker
+            String result = response.poll(TIMEOUT_SECONDS, TimeUnit.SECONDS); 
             channel.basicCancel(consumerTag);
 
             if (result == null) throw new RuntimeException("Timeout esperando resultado del worker");

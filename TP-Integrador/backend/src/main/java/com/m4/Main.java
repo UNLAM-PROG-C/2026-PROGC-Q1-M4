@@ -8,7 +8,8 @@ import java.nio.charset.StandardCharsets;
 
 public class Main {
     private static final int DEFAULT_PORT = 3001;
-
+    private static final int THREAD_POOL_SIZE = 4;
+    
     public static void main(String[] args) throws Exception {
         String envPort = System.getenv("PORT");
 
@@ -19,7 +20,7 @@ public class Main {
         HttpServer server = HttpServer.create(new InetSocketAddress(port), 0);
         server.createContext("/analyze", new AnalyzeHandler());
         server.createContext("/health",  new HealthHandler());
-        server.setExecutor(java.util.concurrent.Executors.newFixedThreadPool(4));
+        server.setExecutor(java.util.concurrent.Executors.newFixedThreadPool(THREAD_POOL_SIZE));
         server.start();
 
         System.out.println("Backend Grupo M4 corriendo en puerto " + port);

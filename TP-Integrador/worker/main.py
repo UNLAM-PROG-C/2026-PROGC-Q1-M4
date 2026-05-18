@@ -10,7 +10,9 @@ RABBITMQ_USER = os.getenv("RABBITMQ_USER", "admin")
 RABBITMQ_PASS = os.getenv("RABBITMQ_PASS", "admin")
 QUEUE_NAME    = "image_queue"
 RESULT_QUEUE  = "result_queue"
-
+DELIBERY_MODE = 2  # Persistente
+CONNECTION_ATTEMPTS = 5
+RETRY_DELAY = 3  # segundos
 LABELS = ["Gato", "Mesa", "Silla", "Laptop"]
 
 
@@ -36,7 +38,7 @@ def publish_result(channel, results: list):
     channel.basic_publish(
         exchange="",
         routing_key=RESULT_QUEUE,
-        properties=pika.BasicProperties(delivery_mode=2),
+        properties=pika.BasicProperties(delivery_mode=DELIBERY_MODE),
         body=json.dumps(results)
     )
     print(f"Resultado publicado en '{RESULT_QUEUE}': {results}")
@@ -63,7 +65,7 @@ def callback(ch, method, properties, body):
             routing_key=reply_to,
             properties=pika.BasicProperties(
                 correlation_id=correlation_id,
-                delivery_mode=2
+                delivery_mode=DELIBERY_MODE
             ),
             body=json.dumps(results)
         )
@@ -91,8 +93,8 @@ def main():
             host=RABBITMQ_HOST,
             port=RABBITMQ_PORT,
             credentials=credentials,
-            connection_attempts=5,
-            retry_delay=3,
+            connection_attempts=CONNECTION_ATTEMPTS,
+            retry_delay=RETRY_DELAY,
         )
 
         print("Conectando a RabbitMQ...")
