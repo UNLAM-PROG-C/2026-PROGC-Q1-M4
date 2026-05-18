@@ -8,9 +8,7 @@ Uso:
 
 - `just` --> ejecuta help
 - `just up` --> levanta todos los contenedores
+- `just down` --> Borra espacio de trabajo (ideal para levantar el proyecto de cero)
+- `just logs` --> Debbugear en vivo los contenedores
+- `just logs-worker` --> Ver los logs de los worker (los worker no se pueden debbugear en vivo nativamente)
 - `just ...` --> etc, son los comandos que salen en el help
-
-Para desarollo usar (tienen hotreload para no tener que reconstruir toda la imagen, la aplicacion de java no lo tiene)
-
-- `just worker-dev`
-- `just front-dev`
