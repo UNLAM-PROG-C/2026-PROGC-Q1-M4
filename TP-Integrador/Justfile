@@ -65,6 +65,10 @@ rabbitmq:
     @echo "RabbitMQ AMQP → localhost:5672 / 30672 (k8s)"
     @echo "RabbitMQ UI   → http://localhost:15672  (admin / admin)"
 
+build-worker:
+    @echo ">>> Construyendo imagen del worker y pusheando a repositorio en hub..."
+    bash scripts/build-workers.sh
+
 # ─────────────────────────────────────────────────────────────
 #  WORKERS EN KUBERNETES
 # ─────────────────────────────────────────────────────────────
@@ -114,7 +118,7 @@ install-keda:
     kubectl rollout status deployment/keda-operator -n keda --timeout=120s
     kubectl rollout status deployment/keda-metrics-apiserver -n keda --timeout=120s
     @echo "KEDA instalado correctamente."
-    
+
 # ─────────────────────────────────────────────────────────────
 #  OBSERVABILIDAD
 # ─────────────────────────────────────────────────────────────

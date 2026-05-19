@@ -80,7 +80,7 @@ spec:
           containers:
             - name: worker
               image: francovallejos885/tp-concurrente-worker:v1.0
-              imagePullPolicy: IfNotPresent
+              imagePullPolicy: Always
               env:
                 - name: RABBITMQ_HOST
                   value: "host.docker.internal"

@@ -14,10 +14,9 @@ import java.util.concurrent.TimeUnit;
 
 public class RabbitPublisher {
 
-    private static final String QUEUE_NAME  = "image_queue";
-    private static final String RESULT_QUEUE = "result_queue";
-    private static final int TIMEOUT_SECONDS = 90;
-    private static final int BLOCKRESPONSE_QUEUE_SIZE = 1;
+    private static final String QUEUE_NAME           = "image_queue";
+    private static final int    TIMEOUT_SECONDS      = 90;
+    private static final int    BLOCKRESPONSE_QUEUE_SIZE = 1;
 
     private final ConnectionFactory factory;
 
@@ -41,15 +40,15 @@ public class RabbitPublisher {
 
     public String waitQueue(byte[] imageBytes) throws Exception {
         try (Connection connection = factory.newConnection();
-            Channel channel = connection.createChannel()) {
+             Channel channel = connection.createChannel()) {
 
             channel.queueDeclare(QUEUE_NAME, true, false, false, null);
 
             String correlationId = UUID.randomUUID().toString();
-            // Cola nombrada, no exclusiva, se borra sola cuando no tiene consumers
-            String replyQueue = "reply." + correlationId;
+            String replyQueue    = "reply." + correlationId;
+
             channel.queueDeclare(replyQueue, true, false, true, null);
-            //                              durable    excl  autoDelete
+            //                               durable  excl  autoDelete
 
             AMQP.BasicProperties props = new AMQP.BasicProperties.Builder()
                 .correlationId(correlationId)
@@ -57,13 +56,15 @@ public class RabbitPublisher {
                 .deliveryMode(2)
                 .build();
 
-            channel.basicPublish("", QUEUE_NAME, props, imageBytes);
-
             BlockingQueue<String> response = new ArrayBlockingQueue<>(BLOCKRESPONSE_QUEUE_SIZE);
 
-            String consumerTag = cosumeResult(channel, replyQueue, correlationId, response);
+            // ✅ Primero suscribirse, después publicar
+            String consumerTag = consumeResult(channel, replyQueue, correlationId, response);
 
-            String result = response.poll(TIMEOUT_SECONDS, TimeUnit.SECONDS); 
+            channel.basicPublish("", QUEUE_NAME, props, imageBytes);
+            System.out.println("Imagen publicada. Tamaño: " + imageBytes.length + " bytes. Esperando respuesta en " + replyQueue + "...");
+
+            String result = response.poll(TIMEOUT_SECONDS, TimeUnit.SECONDS);
             channel.basicCancel(consumerTag);
 
             if (result == null) throw new RuntimeException("Timeout esperando resultado del worker");
@@ -71,16 +72,16 @@ public class RabbitPublisher {
         }
     }
 
-    static private String cosumeResult(Channel channel, String replyQueue, String correlationId, BlockingQueue<String> response) throws Exception {
-        String consumerTag = channel.basicConsume(replyQueue, true,
-                    (tag, delivery) -> {
-                        if (correlationId.equals(delivery.getProperties().getCorrelationId())) {
-                            System.out.println("Respuesta del worker consumida de la cola. Respuesta: " + new String(delivery.getBody(), StandardCharsets.UTF_8));
-                            response.offer(new String(delivery.getBody(), StandardCharsets.UTF_8));
-                        }
-                    },
-                    tag -> {}
-                );
-        return consumerTag;
+    private static String consumeResult(Channel channel, String replyQueue, String correlationId, BlockingQueue<String> response) throws Exception {
+        return channel.basicConsume(replyQueue, true,
+            (tag, delivery) -> {
+                if (correlationId.equals(delivery.getProperties().getCorrelationId())) {
+                    String body = new String(delivery.getBody(), StandardCharsets.UTF_8);
+                    System.out.println("Respuesta del worker recibida: " + body);
+                    response.offer(body);
+                }
+            },
+            tag -> {}
+        );
     }
-}                   
+}
