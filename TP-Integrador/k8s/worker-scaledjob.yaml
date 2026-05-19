@@ -79,8 +79,8 @@ spec:
           restartPolicy: Never
           containers:
             - name: worker
-              image: tp-integrador-worker:latest
-              imagePullPolicy: Never
+              image: francovallejos885/tp-concurrente-worker:v1.0
+              imagePullPolicy: IfNotPresent
               env:
                 - name: RABBITMQ_HOST
                   value: "host.docker.internal"

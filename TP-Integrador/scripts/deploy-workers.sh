@@ -4,37 +4,45 @@
 set -euo pipefail
 
 NAMESPACE="tp-integrador"
-IMAGE_NAME="tp-integrador-worker:latest"
+IMAGE_NAME="francovallejos885/tp-concurrente-worker:v1.0"
 WORKER_CONTEXT="./worker"
 DOCKERFILE="Dockerfile.worker"
-
 K8S_MANIFEST="./k8s/worker-scaledjob.yaml"
 
-# ── 1. Build directo en el namespace k8s.io que usa el cluster ─────────────
+# ── 1. Build ─────────────────────────────────────────────────────────────────
 echo ">>> [1/3] Construyendo imagen ${IMAGE_NAME}..."
 docker build \
   -t "$IMAGE_NAME" \
   -f "$WORKER_CONTEXT/$DOCKERFILE" \
   "$WORKER_CONTEXT"
-# Cargar la imagen en el namespace k8s.io que ve el cluster
-docker --context desktop-linux save "$IMAGE_NAME" | \
-  kubectl run image-loader --image=busybox --rm -i --restart=Never \
-  -n default -- sh -c 'cat > /dev/null' 2>/dev/null || true
-# Importar via ctr al namespace correcto
-docker --context desktop-linux save "$IMAGE_NAME" > /tmp/worker.tar
-kubectl cp /tmp/worker.tar kube-system/$(kubectl get pods -n kube-system | grep kube-proxy | head -1 | awk '{print $1}'):/tmp/worker.tar 2>/dev/null || true
 echo "    OK."
 
-# ── 2. Namespace ────────────────────────────────────────────────────────────
-echo ">>> [2/3] Creando namespace '${NAMESPACE}' (si no existe)..."
-kubectl create namespace "$NAMESPACE" --dry-run=client -o yaml | kubectl apply -f -
+# ── 2. Push solo si hubo cambios ─────────────────────────────────────────────
+echo ">>> [2/3] Verificando si la imagen cambio..."
 
-# ── 3. Manifiestos ──────────────────────────────────────────────────────────
-echo ">>> [3/3] Aplicando ${K8S_MANIFEST}..."
+LOCAL_DIGEST=$(docker inspect --format='{{index .RepoDigests 0}}' "$IMAGE_NAME" 2>/dev/null || echo "none")
+REMOTE_DIGEST=$(docker manifest inspect "$IMAGE_NAME" 2>/dev/null \
+  | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('config',{}).get('digest','none'))" 2>/dev/null || echo "none")
+
+LOCAL_ID=$(docker inspect --format='{{.Id}}' "$IMAGE_NAME" 2>/dev/null || echo "local_none")
+REMOTE_ID=$(docker pull --quiet "$IMAGE_NAME" 2>/dev/null && docker inspect --format='{{.Id}}' "$IMAGE_NAME" 2>/dev/null || echo "remote_none")
+
+if [ "$LOCAL_ID" = "$REMOTE_ID" ]; then
+  echo "    Sin cambios, salteando push."
+else
+  echo "    Cambios detectados, pusheando..."
+  docker push "$IMAGE_NAME"
+  echo "    OK."
+fi
+
+# ── 3. Namespace + manifiesto ────────────────────────────────────────────────
+echo ">>> [3/3] Aplicando ${K8S_MANIFEST} en namespace '${NAMESPACE}'..."
+kubectl create namespace "$NAMESPACE" --dry-run=client -o yaml | kubectl apply -f -
 kubectl apply -f "$K8S_MANIFEST" -n "$NAMESPACE"
+echo "    OK."
 
 echo ""
 echo "Deploy completo. Comandos utiles:"
-echo "  kubectl get all -n ${NAMESPACE}"
-echo "  kubectl get scaledjob -n ${NAMESPACE}"
-echo "  kubectl logs -l app=worker -n ${NAMESPACE} -f"
+echo "  kubectl get scaledjob worker -n ${NAMESPACE}"
+echo "  kubectl get pods -n ${NAMESPACE} -w"
+echo "  kubectl logs -l app=worker -n ${NAMESPACE} --tail=50"
