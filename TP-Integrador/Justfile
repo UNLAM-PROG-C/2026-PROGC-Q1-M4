@@ -112,9 +112,9 @@ install-keda:
     kubectl apply --server-side -f https://github.com/kedacore/keda/releases/download/v2.14.0/keda-2.14.0.yaml
     @echo ">>> Esperando que KEDA este listo (puede tardar ~60s)..."
     kubectl rollout status deployment/keda-operator -n keda --timeout=120s
-    kubectl rollout status deployment/keda-operator-metrics-apiserver -n keda --timeout=120s
+    kubectl rollout status deployment/keda-metrics-apiserver -n keda --timeout=120s
     @echo "KEDA instalado correctamente."
-
+    
 # ─────────────────────────────────────────────────────────────
 #  OBSERVABILIDAD
 # ─────────────────────────────────────────────────────────────

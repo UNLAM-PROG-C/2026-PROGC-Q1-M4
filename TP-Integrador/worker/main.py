@@ -38,7 +38,7 @@ def publish_result(channel, results: list):
     channel.basic_publish(
         exchange="",
         routing_key=RESULT_QUEUE,
-        properties=pika.BasicProperties(delivery_mode=DELIBERY_MODE),
+        properties=pika.BasicProperties(delivery_mode=DELIVERY_MODE),
         body=json.dumps(results)
     )
     print(f"Resultado publicado en '{RESULT_QUEUE}': {results}")
