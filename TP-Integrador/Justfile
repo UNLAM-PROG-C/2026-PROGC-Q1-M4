@@ -2,70 +2,187 @@
 # Uso: just <comando>
 # Instalacion: winget install Casey.Just
 
-# Muestra esta ayuda por defecto
 default:
     @just --list --unsorted
 
-# Levanta frontend + backend juntos
-up:
+# ─────────────────────────────────────────────────────────────
+#  MODO DEV — todo local con docker compose (sin K8s)
+# ─────────────────────────────────────────────────────────────
+
+# Levanta frontend + backend + worker + rabbitmq en docker compose
+dev:
+    @echo ">>> [DEV] Levantando stack completo con docker compose..."
+    @echo ">>> (sin K8s, workers corren en docker compose)"
     docker compose up --build -d
     @echo ""
-    @echo "  Frontend → http://localhost:8080"
-    @echo "  Backend  → http://localhost:3001"
+    @echo "  Frontend  → http://localhost:8080"
+    @echo "  Backend   → http://localhost:3001"
+    @echo "  RabbitMQ  → http://localhost:15672  (admin / admin)"
     @echo ""
+    @echo "  Para ver logs: just logs"
+    @echo "  Para bajar:    just dev-down"
 
-# Detiene y elimina los contenedores
-down:
+# Modo desarrollo del frontend con hot-reload
+dev-front:
+    docker compose up -d frontend
+    docker compose watch frontend
+
+# Baja el stack de desarrollo
+dev-down:
     docker compose down
+    @echo "Stack de desarrollo detenido."
 
-# Levanta solo el frontend → http://localhost:8080
+# ─────────────────────────────────────────────────────────────
+#  MODO UP — docker compose + worker en K8s con imagen local
+# ─────────────────────────────────────────────────────────────
+
+# Levanta frontend + backend + rabbitmq en docker compose, worker en K8s
+up:
+    @echo ">>> [UP] Levantando frontend, backend y rabbitmq..."
+    docker compose up --build -d frontend backend rabbitmq
+    @echo ""
+    @echo ">>> Esperando que RabbitMQ este listo..."
+    bash scripts/wait-rabbitmq.sh
+    @echo ""
+    @echo ">>> Buildeando imagen del worker y cargando al nodo K8s..."
+    bash scripts/deploy-worker-k8s.sh
+    @echo ""
+    @echo "  Frontend  → http://localhost:8080"
+    @echo "  Backend   → http://localhost:3001"
+    @echo "  RabbitMQ  → http://localhost:15672  (admin / admin)"
+    @echo "  Workers   → just worker-status"
+
+# Detiene docker compose, elimina workers de K8s y la imagen del worker del nodo
+down:
+    @echo ">>> Eliminando workers de Kubernetes..."
+    -kubectl delete namespace tp-integrador --ignore-not-found
+    @echo ">>> Eliminando imagenes del worker del nodo K8s..."
+    -docker exec desktop-control-plane sh -c "ctr -n k8s.io images ls | grep tp-integrador-worker | awk '{print \$1}' | xargs -r ctr -n k8s.io images rm"
+    @echo ">>> Bajando contenedores..."
+    docker compose down
+    @echo "Todo detenido."
+
+# ─────────────────────────────────────────────────────────────
+#  CONTENEDORES INDIVIDUALES
+# ─────────────────────────────────────────────────────────────
+
 front:
     docker compose up --build -d frontend
     @echo "Frontend → http://localhost:8080"
 
-# Modo desarrollo del frontend: sincroniza cambios y reinicia sin rebuild
-front-dev:
+dev-front-watch:
     docker compose up -d frontend
     docker compose watch frontend
 
-# Reinicia frontend sin rebuild (manual)
 front-restart:
     docker compose restart frontend
-    @echo "Frontend restarted"
 
-# Levanta solo el backend → http://localhost:3001
 back:
     docker compose up --build -d backend
     @echo "Backend → http://localhost:3001"
 
-# Levanta solo el worker
-worker:
-    docker compose up -d worker
-    @echo "Worker started"
+rabbitmq:
+    docker compose up -d rabbitmq
+    @echo "RabbitMQ AMQP → localhost:5672"
+    @echo "RabbitMQ UI   → http://localhost:15672  (admin / admin)"
 
-# Reconstruye y levanta solo el worker
-worker-build:
-    docker compose up --build -d worker
-    @echo "Worker rebuilt and started"
+# ─────────────────────────────────────────────────────────────
+#  WORKERS EN KUBERNETES
+# ─────────────────────────────────────────────────────────────
 
-# Modo desarrollo del worker: sincroniza cambios y reinicia sin rebuild
-worker-dev:
-    docker compose up -d worker
-    docker compose watch worker
+# Rebuilded el worker, lo carga al nodo K8s y redespliega
+worker-rebuild:
+    @echo ">>> Rebuildeando worker..."
+    -kubectl delete jobs --all -n tp-integrador
+    @echo ">>> Eliminando imagenes del worker del nodo K8s..."
+    -docker exec desktop-control-plane sh -c "ctr -n k8s.io images ls | grep tp-integrador-worker | awk '{print \$1}' | xargs -r ctr -n k8s.io images rm"
+    @echo ">>> Redeployando..."
+    bash scripts/deploy-worker-k8s.sh
+    @echo "Worker actualizado."
 
-# Reinicia worker sin rebuild (manual)
-worker-restart:
-    docker compose restart worker
-    @echo "Worker restarted"
+worker-up:
+    bash scripts/deploy-worker-k8s.sh
+    @echo "Listo. Ver estado: just worker-status"
 
-# Muestra los logs en tiempo real
+worker-down:
+    -kubectl delete namespace tp-integrador --ignore-not-found
+    @echo "Workers eliminados de Kubernetes."
+    @echo ">>> Eliminando imagenes del worker del nodo K8s..."
+    -docker exec desktop-control-plane sh -c "ctr -n k8s.io images ls | grep tp-integrador-worker | awk '{print \$1}' | xargs -r ctr -n k8s.io images rm"
+
+worker-status:
+    @echo "=== Pods / Jobs ==="
+    kubectl get all -n tp-integrador
+    @echo ""
+    @echo "=== ScaledJob (KEDA) ==="
+    kubectl get scaledjob -n tp-integrador
+
+# ─────────────────────────────────────────────────────────────
+#  KUBERNETES / KEDA
+# ─────────────────────────────────────────────────────────────
+
+install-keda:
+    @echo ">>> Instalando KEDA..."
+    kubectl apply --server-side -f https://github.com/kedacore/keda/releases/download/v2.14.0/keda-2.14.0.yaml
+    @echo ">>> Esperando que KEDA este listo (puede tardar ~60s)..."
+    kubectl rollout status deployment/keda-operator -n keda --timeout=120s
+    kubectl rollout status deployment/keda-metrics-apiserver -n keda --timeout=120s
+    @echo "KEDA instalado correctamente."
+
+# ─────────────────────────────────────────────────────────────
+#  OBSERVABILIDAD
+# ─────────────────────────────────────────────────────────────
+
+log:
+    @echo "════════════════════════════════════════════════════════"
+    @echo "  ESTADO KUBERNETES"
+    @echo "════════════════════════════════════════════════════════"
+    -kubectl get all -n tp-integrador
+    @echo ""
+    -kubectl get scaledjob -n tp-integrador
+    @echo ""
+    @echo "════════════════════════════════════════════════════════"
+    @echo "  LOGS DOCKER (ultimas 30 lineas por servicio)"
+    @echo "════════════════════════════════════════════════════════"
+    @echo "--- frontend ---"
+    -docker compose logs --tail=30 frontend
+    @echo ""
+    @echo "--- backend ---"
+    -docker compose logs --tail=30 backend
+    @echo ""
+    @echo "--- rabbitmq ---"
+    -docker compose logs --tail=30 rabbitmq
+    @echo ""
+    @echo "════════════════════════════════════════════════════════"
+    @echo "  LOGS WORKERS k8s (ultimas 30 lineas)"
+    @echo "════════════════════════════════════════════════════════"
+    -kubectl logs -l app=worker -n tp-integrador --tail=30
+
 logs:
     docker compose logs -f
 
-# Reconstruye todas las imágenes desde cero
+logs-worker:
+    kubectl logs -f -l app=worker -n tp-integrador --prefix=true
+
+logs-back:
+    docker compose logs -f backend
+
+# ─────────────────────────────────────────────────────────────
+#  BUILD / LIMPIEZA
+# ─────────────────────────────────────────────────────────────
+
 build:
     docker compose build --no-cache
 
-# Elimina contenedores, imágenes y caché del proyecto
 clean:
-    docker compose down --rmi local --volumes --remove-orphans
+    @echo ">>> [1/4] Eliminando recursos de Kubernetes..."
+    -kubectl delete namespace tp-integrador --ignore-not-found
+    @echo ">>> [2/4] Bajando contenedores y volumes..."
+    docker compose down --volumes --remove-orphans
+    @echo ">>> [3/4] Eliminando imagenes del proyecto..."
+    -docker rmi tp-integrador-worker:latest --force
+    -docker rmi tp-integrador-frontend:latest --force
+    -docker rmi tp-integrador-backend:latest --force
+    @echo ">>> [4/4] Limpiando cache de builds huerfanos..."
+    docker image prune -f
+    @echo "Limpieza completa."

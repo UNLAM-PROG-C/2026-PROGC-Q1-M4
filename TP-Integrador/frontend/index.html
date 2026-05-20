@@ -1,1194 +1,1214 @@
 <!doctype html>
 <html lang="es">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Trabajo Integrador Grupo M4</title>
-    <style>
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-      }
 
-      :root {
-        --neon1: #a78bfa;
-        --neon2: #34d399;
-        --neon3: #f472b6;
-        --neon4: #60a5fa;
-        --dark: #0a0a0f;
-        --card: #12121a;
-        --border: rgba(167, 139, 250, 0.25);
-      }
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Trabajo Integrador Grupo M4</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
-      body {
-        background: var(--dark);
-        color: #e2e8f0;
-        font-family: "Segoe UI", system-ui, sans-serif;
-        min-height: 100vh;
-        overflow-x: hidden;
-      }
+    :root {
+      --neon1: #a78bfa;
+      --neon2: #34d399;
+      --neon3: #f472b6;
+      --neon4: #60a5fa;
+      --dark: #0a0a0f;
+      --card: #12121a;
+      --border: rgba(167, 139, 250, 0.25);
+    }
 
-      canvas#particles {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        pointer-events: none;
-        z-index: 0;
-      }
+    body {
+      background: var(--dark);
+      color: #e2e8f0;
+      font-family: "Segoe UI", system-ui, sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
 
-      .wrapper {
-        position: relative;
-        z-index: 1;
-        max-width: 860px;
-        margin: 0 auto;
-        padding: 2rem 1.5rem 4rem;
-      }
+    canvas#particles {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 0;
+    }
 
-      header {
-        text-align: center;
-        padding: 3rem 0 2rem;
-      }
+    .wrapper {
+      position: relative;
+      z-index: 1;
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem 4rem;
+    }
 
-      .badge {
-        display: inline-block;
-        background: linear-gradient(
-          135deg,
+    header {
+      text-align: center;
+      padding: 3rem 0 2rem;
+    }
+
+    .badge {
+      display: inline-block;
+      background: linear-gradient(135deg,
           rgba(167, 139, 250, 0.15),
-          rgba(52, 211, 153, 0.15)
-        );
-        border: 1px solid var(--border);
-        border-radius: 999px;
-        font-size: 0.75rem;
-        letter-spacing: 0.12em;
-        text-transform: uppercase;
-        color: var(--neon1);
-        padding: 0.3rem 1rem;
-        margin-bottom: 1rem;
-        animation: pulse-badge 3s ease-in-out infinite;
+          rgba(52, 211, 153, 0.15));
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      font-size: 0.75rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--neon1);
+      padding: 0.3rem 1rem;
+      margin-bottom: 1rem;
+      animation: pulse-badge 3s ease-in-out infinite;
+    }
+
+    @keyframes pulse-badge {
+
+      0%,
+      100% {
+        box-shadow: 0 0 8px rgba(167, 139, 250, 0.3);
       }
 
-      @keyframes pulse-badge {
-        0%,
-        100% {
-          box-shadow: 0 0 8px rgba(167, 139, 250, 0.3);
-        }
-        50% {
-          box-shadow: 0 0 20px rgba(167, 139, 250, 0.7);
-        }
+      50% {
+        box-shadow: 0 0 20px rgba(167, 139, 250, 0.7);
       }
+    }
 
-      h1 {
-        font-size: clamp(1.8rem, 5vw, 3rem);
-        font-weight: 700;
-        background: linear-gradient(
-          135deg,
+    h1 {
+      font-size: clamp(1.8rem, 5vw, 3rem);
+      font-weight: 700;
+      background: linear-gradient(135deg,
           var(--neon1),
           var(--neon4),
-          var(--neon2)
-        );
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-        line-height: 1.2;
-        margin-bottom: 0.6rem;
-        animation: title-glow 4s ease-in-out infinite;
+          var(--neon2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      line-height: 1.2;
+      margin-bottom: 0.6rem;
+      animation: title-glow 4s ease-in-out infinite;
+    }
+
+    @keyframes title-glow {
+
+      0%,
+      100% {
+        filter: drop-shadow(0 0 8px rgba(167, 139, 250, 0.4));
       }
 
-      @keyframes title-glow {
-        0%,
-        100% {
-          filter: drop-shadow(0 0 8px rgba(167, 139, 250, 0.4));
-        }
-        50% {
-          filter: drop-shadow(0 0 22px rgba(96, 165, 250, 0.6));
-        }
+      50% {
+        filter: drop-shadow(0 0 22px rgba(96, 165, 250, 0.6));
       }
+    }
 
-      .subtitle {
-        color: #94a3b8;
-        font-size: 1rem;
-        letter-spacing: 0.05em;
-      }
+    .subtitle {
+      color: #94a3b8;
+      font-size: 1rem;
+      letter-spacing: 0.05em;
+    }
 
-      .ai-indicator {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 0.6rem;
-        margin-top: 0.8rem;
-      }
+    .ai-indicator {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.6rem;
+      margin-top: 0.8rem;
+    }
 
-      .ai-dot {
-        width: 8px;
-        height: 8px;
-        border-radius: 50%;
-        background: var(--neon2);
-        animation: blink-dot 1.4s ease-in-out infinite;
-        transition: background 0.5s ease;
-      }
-      .ai-dot:nth-child(2) {
-        animation-delay: 0.2s;
-        background: var(--neon1);
-      }
-      .ai-dot:nth-child(3) {
-        animation-delay: 0.4s;
-        background: var(--neon4);
-      }
+    .ai-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--neon2);
+      animation: blink-dot 1.4s ease-in-out infinite;
+      transition: background 0.5s ease;
+    }
 
-      .ai-indicator.offline .ai-dot {
-        background: #475569 !important;
-        animation: none;
-        opacity: 0.4;
-      }
-      .ai-indicator.offline .ai-label {
-        color: #475569;
-      }
-      .ai-indicator.checking .ai-dot {
-        background: #fbbf24 !important;
-        animation: blink-dot 0.6s ease-in-out infinite;
-      }
-      .ai-indicator.checking .ai-label {
-        color: #92400e;
-      }
+    .ai-dot:nth-child(2) {
+      animation-delay: 0.2s;
+      background: var(--neon1);
+    }
 
-      @keyframes blink-dot {
-        0%,
-        80%,
-        100% {
-          transform: scale(1);
-          opacity: 0.5;
-        }
-        40% {
-          transform: scale(1.5);
-          opacity: 1;
-        }
-      }
+    .ai-dot:nth-child(3) {
+      animation-delay: 0.4s;
+      background: var(--neon4);
+    }
 
-      .ai-label {
-        font-size: 0.8rem;
-        color: #64748b;
-        letter-spacing: 0.1em;
-        text-transform: uppercase;
-        transition: color 0.5s ease;
-      }
+    .ai-indicator.offline .ai-dot {
+      background: #475569 !important;
+      animation: none;
+      opacity: 0.4;
+    }
 
-      .drop-zone {
-        position: relative;
-        border: 2px dashed var(--border);
-        border-radius: 20px;
-        padding: 3rem 2rem;
-        text-align: center;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        background: rgba(167, 139, 250, 0.03);
-        overflow: hidden;
-      }
+    .ai-indicator.offline .ai-label {
+      color: #475569;
+    }
 
-      .drop-zone::before {
-        content: "";
-        position: absolute;
-        inset: 0;
-        border-radius: 20px;
-        background: linear-gradient(
-          135deg,
-          rgba(167, 139, 250, 0.05),
-          transparent,
-          rgba(52, 211, 153, 0.05)
-        );
-        opacity: 0;
-        transition: opacity 0.3s;
-      }
+    .ai-indicator.checking .ai-dot {
+      background: #fbbf24 !important;
+      animation: blink-dot 0.6s ease-in-out infinite;
+    }
 
-      .drop-zone.dragover {
-        border-color: var(--neon1);
-        background: rgba(167, 139, 250, 0.08);
-        transform: scale(1.01);
-        box-shadow:
-          0 0 40px rgba(167, 139, 250, 0.3),
-          inset 0 0 40px rgba(167, 139, 250, 0.05);
-      }
+    .ai-indicator.checking .ai-label {
+      color: #92400e;
+    }
 
-      .drop-zone.dragover::before {
-        opacity: 1;
-      }
+    @keyframes blink-dot {
 
-      .drop-zone.has-image {
-        border-style: solid;
-        border-color: rgba(52, 211, 153, 0.5);
-        padding: 1.5rem;
-      }
-
-      .drop-icon {
-        font-size: 3.5rem;
-        margin-bottom: 1rem;
-        animation: float-icon 3s ease-in-out infinite;
-        display: block;
-      }
-
-      @keyframes float-icon {
-        0%,
-        100% {
-          transform: translateY(0);
-        }
-        50% {
-          transform: translateY(-8px);
-        }
-      }
-
-      .drop-title {
-        font-size: 1.15rem;
-        font-weight: 600;
-        color: #e2e8f0;
-        margin-bottom: 0.4rem;
-      }
-
-      .drop-sub {
-        color: #64748b;
-        font-size: 0.9rem;
-      }
-
-      .drop-hint {
-        display: inline-block;
-        margin-top: 1rem;
-        padding: 0.4rem 1.2rem;
-        border-radius: 999px;
-        border: 1px solid rgba(96, 165, 250, 0.3);
-        font-size: 0.8rem;
-        color: var(--neon4);
-        background: rgba(96, 165, 250, 0.07);
-        cursor: pointer;
-        transition: all 0.2s;
-      }
-      .drop-hint:hover {
-        background: rgba(96, 165, 250, 0.15);
-        border-color: var(--neon4);
-      }
-
-      #fileInput {
-        display: none;
-      }
-
-      #preview-container {
-        display: none;
-      }
-
-      #preview {
-        max-width: 100%;
-        max-height: 320px;
-        border-radius: 12px;
-        object-fit: contain;
-        box-shadow: 0 0 30px rgba(167, 139, 250, 0.25);
-        border: 1px solid var(--border);
-      }
-
-      .preview-name {
-        font-size: 0.8rem;
-        color: #64748b;
-        margin-top: 0.6rem;
-      }
-
-      .preview-actions {
-        display: flex;
-        gap: 0.8rem;
-        justify-content: center;
-        margin-top: 1rem;
-      }
-
-      .btn-clear {
-        padding: 0.4rem 1rem;
-        border-radius: 8px;
-        border: 1px solid rgba(244, 114, 182, 0.4);
-        background: rgba(244, 114, 182, 0.08);
-        color: var(--neon3);
-        font-size: 0.85rem;
-        cursor: pointer;
-        transition: all 0.2s;
-      }
-      .btn-clear:hover {
-        background: rgba(244, 114, 182, 0.18);
-      }
-
-      .btn-load {
-        padding: 0.4rem 1rem;
-        border-radius: 8px;
-        border: 1px solid rgba(52, 211, 153, 0.4);
-        background: rgba(52, 211, 153, 0.1);
-        color: var(--neon2);
-        font-size: 0.85rem;
-        cursor: pointer;
-        transition: all 0.2s;
-      }
-      .btn-load:hover {
-        background: rgba(52, 211, 153, 0.2);
-        border-color: var(--neon2);
-        box-shadow: 0 0 12px rgba(52, 211, 153, 0.3);
-      }
-
-      .preview-actions {
-        display: flex;
-        gap: 0.8rem;
-        justify-content: center;
-        margin-top: 1rem;
-      }
-
-      .analyze-btn-main {
-        width: 100%;
-        padding: 1rem 2rem;
-        border-radius: 14px;
-        border: 1px solid rgba(167, 139, 250, 0.4);
-        background: linear-gradient(
-          135deg,
-          rgba(167, 139, 250, 0.15),
-          rgba(96, 165, 250, 0.1)
-        );
-        color: var(--neon1);
-        font-size: 1.05rem;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.3s;
-        letter-spacing: 0.07em;
-        position: relative;
-        overflow: hidden;
-        margin-top: 1.5rem;
-        margin-bottom: 1.5rem;
-      }
-
-      .analyze-btn-main::before {
-        content: "";
-        position: absolute;
-        top: 0;
-        left: -100%;
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(
-          90deg,
-          transparent,
-          rgba(255, 255, 255, 0.06),
-          transparent
-        );
-        transition: left 0.5s;
-      }
-
-      .analyze-btn-main:hover::before {
-        left: 100%;
-      }
-      .analyze-btn-main:hover {
-        box-shadow: 0 0 30px rgba(167, 139, 250, 0.4);
-        border-color: var(--neon1);
-        transform: translateY(-1px);
-      }
-      .analyze-btn-main:disabled {
-        opacity: 0.35;
-        cursor: not-allowed;
-        transform: none;
-      }
-
-      .state-panel {
-        background: var(--card);
-        border: 1px solid var(--border);
-        border-radius: 20px;
-        padding: 2rem;
-        min-height: 200px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        position: relative;
-        overflow: hidden;
-        transition: all 0.5s ease;
-      }
-
-      .state-panel::after {
-        content: "";
-        position: absolute;
-        inset: 0;
-        border-radius: 20px;
-        background: linear-gradient(
-          135deg,
-          rgba(167, 139, 250, 0.04),
-          transparent
-        );
-        pointer-events: none;
-      }
-
-      .idle-state {
-        text-align: center;
-        color: #475569;
-      }
-      .idle-state .idle-icon {
-        font-size: 2.5rem;
-        margin-bottom: 0.8rem;
+      0%,
+      80%,
+      100% {
+        transform: scale(1);
         opacity: 0.5;
       }
 
-      .loading-state {
-        width: 100%;
+      40% {
+        transform: scale(1.5);
+        opacity: 1;
+      }
+    }
+
+    .ai-label {
+      font-size: 0.8rem;
+      color: #64748b;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      transition: color 0.5s ease;
+    }
+
+    .drop-zone {
+      position: relative;
+      border: 2px dashed var(--border);
+      border-radius: 20px;
+      padding: 3rem 2rem;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      background: rgba(167, 139, 250, 0.03);
+      overflow: hidden;
+    }
+
+    .drop-zone::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: 20px;
+      background: linear-gradient(135deg,
+          rgba(167, 139, 250, 0.05),
+          transparent,
+          rgba(52, 211, 153, 0.05));
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .drop-zone.dragover {
+      border-color: var(--neon1);
+      background: rgba(167, 139, 250, 0.08);
+      transform: scale(1.01);
+      box-shadow:
+        0 0 40px rgba(167, 139, 250, 0.3),
+        inset 0 0 40px rgba(167, 139, 250, 0.05);
+    }
+
+    .drop-zone.dragover::before {
+      opacity: 1;
+    }
+
+    .drop-zone.has-image {
+      border-style: solid;
+      border-color: rgba(52, 211, 153, 0.5);
+      padding: 1.5rem;
+    }
+
+    .drop-icon {
+      font-size: 3.5rem;
+      margin-bottom: 1rem;
+      animation: float-icon 3s ease-in-out infinite;
+      display: block;
+    }
+
+    @keyframes float-icon {
+
+      0%,
+      100% {
+        transform: translateY(0);
       }
 
-      .neural-grid {
-        display: grid;
-        grid-template-columns: repeat(5, 1fr);
-        gap: 6px;
-        margin-bottom: 1.5rem;
+      50% {
+        transform: translateY(-8px);
+      }
+    }
+
+    .drop-title {
+      font-size: 1.15rem;
+      font-weight: 600;
+      color: #e2e8f0;
+      margin-bottom: 0.4rem;
+    }
+
+    .drop-sub {
+      color: #64748b;
+      font-size: 0.9rem;
+    }
+
+    .drop-hint {
+      display: inline-block;
+      margin-top: 1rem;
+      padding: 0.4rem 1.2rem;
+      border-radius: 999px;
+      border: 1px solid rgba(96, 165, 250, 0.3);
+      font-size: 0.8rem;
+      color: var(--neon4);
+      background: rgba(96, 165, 250, 0.07);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .drop-hint:hover {
+      background: rgba(96, 165, 250, 0.15);
+      border-color: var(--neon4);
+    }
+
+    #fileInput {
+      display: none;
+    }
+
+    #preview-container {
+      display: none;
+    }
+
+    #preview {
+      max-width: 100%;
+      max-height: 320px;
+      border-radius: 12px;
+      object-fit: contain;
+      box-shadow: 0 0 30px rgba(167, 139, 250, 0.25);
+      border: 1px solid var(--border);
+    }
+
+    .preview-name {
+      font-size: 0.8rem;
+      color: #64748b;
+      margin-top: 0.6rem;
+    }
+
+    .preview-actions {
+      display: flex;
+      gap: 0.8rem;
+      justify-content: center;
+      margin-top: 1rem;
+    }
+
+    .btn-clear {
+      padding: 0.4rem 1rem;
+      border-radius: 8px;
+      border: 1px solid rgba(244, 114, 182, 0.4);
+      background: rgba(244, 114, 182, 0.08);
+      color: var(--neon3);
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-clear:hover {
+      background: rgba(244, 114, 182, 0.18);
+    }
+
+    .btn-load {
+      padding: 0.4rem 1rem;
+      border-radius: 8px;
+      border: 1px solid rgba(52, 211, 153, 0.4);
+      background: rgba(52, 211, 153, 0.1);
+      color: var(--neon2);
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-load:hover {
+      background: rgba(52, 211, 153, 0.2);
+      border-color: var(--neon2);
+      box-shadow: 0 0 12px rgba(52, 211, 153, 0.3);
+    }
+
+    .preview-actions {
+      display: flex;
+      gap: 0.8rem;
+      justify-content: center;
+      margin-top: 1rem;
+    }
+
+    .analyze-btn-main {
+      width: 100%;
+      padding: 1rem 2rem;
+      border-radius: 14px;
+      border: 1px solid rgba(167, 139, 250, 0.4);
+      background: linear-gradient(135deg,
+          rgba(167, 139, 250, 0.15),
+          rgba(96, 165, 250, 0.1));
+      color: var(--neon1);
+      font-size: 1.05rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      letter-spacing: 0.07em;
+      position: relative;
+      overflow: hidden;
+      margin-top: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .analyze-btn-main::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg,
+          transparent,
+          rgba(255, 255, 255, 0.06),
+          transparent);
+      transition: left 0.5s;
+    }
+
+    .analyze-btn-main:hover::before {
+      left: 100%;
+    }
+
+    .analyze-btn-main:hover {
+      box-shadow: 0 0 30px rgba(167, 139, 250, 0.4);
+      border-color: var(--neon1);
+      transform: translateY(-1px);
+    }
+
+    .analyze-btn-main:disabled {
+      opacity: 0.35;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .state-panel {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 2rem;
+      min-height: 200px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.5s ease;
+    }
+
+    .state-panel::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: 20px;
+      background: linear-gradient(135deg,
+          rgba(167, 139, 250, 0.04),
+          transparent);
+      pointer-events: none;
+    }
+
+    .idle-state {
+      text-align: center;
+      color: #475569;
+    }
+
+    .idle-state .idle-icon {
+      font-size: 2.5rem;
+      margin-bottom: 0.8rem;
+      opacity: 0.5;
+    }
+
+    .loading-state {
+      width: 100%;
+    }
+
+    .neural-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 6px;
+      margin-bottom: 1.5rem;
+    }
+
+    .neural-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: rgba(167, 139, 250, 0.2);
+      margin: auto;
+      animation: neural-pulse 1.5s ease-in-out infinite;
+    }
+
+    .neural-dot.active {
+      background: var(--neon1);
+      box-shadow: 0 0 8px var(--neon1);
+    }
+
+    @keyframes neural-pulse {
+
+      0%,
+      100% {
+        transform: scale(1);
+        opacity: 0.3;
       }
 
-      .neural-dot {
-        width: 10px;
-        height: 10px;
-        border-radius: 50%;
-        background: rgba(167, 139, 250, 0.2);
-        margin: auto;
-        animation: neural-pulse 1.5s ease-in-out infinite;
+      50% {
+        transform: scale(1.6);
+        opacity: 1;
+      }
+    }
+
+    .loading-bars {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .loading-bar {
+      height: 6px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.05);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .loading-bar-fill {
+      height: 100%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, var(--neon1), var(--neon4));
+      animation: scan 1.8s ease-in-out infinite;
+      width: 60%;
+    }
+
+    .loading-bar:nth-child(2) .loading-bar-fill {
+      animation-delay: 0.3s;
+      width: 45%;
+      background: linear-gradient(90deg, var(--neon4), var(--neon2));
+    }
+
+    .loading-bar:nth-child(3) .loading-bar-fill {
+      animation-delay: 0.6s;
+      width: 70%;
+      background: linear-gradient(90deg, var(--neon2), var(--neon3));
+    }
+
+    @keyframes scan {
+      0% {
+        transform: translateX(-100%);
       }
 
-      .neural-dot.active {
-        background: var(--neon1);
-        box-shadow: 0 0 8px var(--neon1);
+      100% {
+        transform: translateX(300%);
+      }
+    }
+
+    .loading-text {
+      text-align: center;
+      font-size: 0.85rem;
+      color: var(--neon1);
+      letter-spacing: 0.1em;
+      margin-top: 1rem;
+      animation: fade-text 2s ease-in-out infinite;
+    }
+
+    @keyframes fade-text {
+
+      0%,
+      100% {
+        opacity: 0.5;
       }
 
-      @keyframes neural-pulse {
-        0%,
-        100% {
-          transform: scale(1);
-          opacity: 0.3;
-        }
-        50% {
-          transform: scale(1.6);
-          opacity: 1;
-        }
+      50% {
+        opacity: 1;
+      }
+    }
+
+    .results-state {
+      width: 100%;
+    }
+
+    .results-header {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      margin-bottom: 1.5rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .results-title {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--neon2);
+      letter-spacing: 0.05em;
+    }
+
+    .results-count {
+      background: rgba(52, 211, 153, 0.12);
+      border: 1px solid rgba(52, 211, 153, 0.3);
+      border-radius: 999px;
+      padding: 0.2rem 0.7rem;
+      font-size: 0.75rem;
+      color: var(--neon2);
+    }
+
+    .result-item {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 0.75rem 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      animation: slide-in 0.4s ease both;
+    }
+
+    @keyframes slide-in {
+      from {
+        opacity: 0;
+        transform: translateX(-20px);
       }
 
-      .loading-bars {
-        display: flex;
-        flex-direction: column;
-        gap: 8px;
+      to {
+        opacity: 1;
+        transform: translateX(0);
       }
+    }
 
-      .loading-bar {
-        height: 6px;
-        border-radius: 999px;
-        background: rgba(255, 255, 255, 0.05);
-        overflow: hidden;
-        position: relative;
-      }
+    .result-name {
+      min-width: 140px;
+      font-size: 0.95rem;
+      color: #e2e8f0;
+      font-weight: 500;
+      text-transform: capitalize;
+    }
 
-      .loading-bar-fill {
-        height: 100%;
-        border-radius: 999px;
-        background: linear-gradient(90deg, var(--neon1), var(--neon4));
-        animation: scan 1.8s ease-in-out infinite;
-        width: 60%;
-      }
+    .result-bar-wrap {
+      flex: 1;
+      height: 8px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 999px;
+      overflow: hidden;
+    }
 
-      .loading-bar:nth-child(2) .loading-bar-fill {
-        animation-delay: 0.3s;
-        width: 45%;
-        background: linear-gradient(90deg, var(--neon4), var(--neon2));
-      }
-      .loading-bar:nth-child(3) .loading-bar-fill {
-        animation-delay: 0.6s;
-        width: 70%;
-        background: linear-gradient(90deg, var(--neon2), var(--neon3));
-      }
+    .result-bar {
+      height: 100%;
+      border-radius: 999px;
+      transition: width 1s ease;
+      width: 0;
+    }
 
-      @keyframes scan {
-        0% {
-          transform: translateX(-100%);
-        }
-        100% {
-          transform: translateX(300%);
-        }
-      }
+    .result-pct {
+      min-width: 48px;
+      text-align: right;
+      font-size: 0.9rem;
+      font-weight: 600;
+      font-variant-numeric: tabular-nums;
+    }
 
-      .loading-text {
-        text-align: center;
-        font-size: 0.85rem;
-        color: var(--neon1);
-        letter-spacing: 0.1em;
-        margin-top: 1rem;
-        animation: fade-text 2s ease-in-out infinite;
-      }
+    .error-state {
+      text-align: center;
+    }
 
-      @keyframes fade-text {
-        0%,
-        100% {
-          opacity: 0.5;
-        }
-        50% {
-          opacity: 1;
-        }
-      }
+    .error-icon {
+      font-size: 2.5rem;
+      margin-bottom: 0.8rem;
+    }
 
-      .results-state {
-        width: 100%;
-      }
+    .error-msg {
+      color: #f87171;
+      font-size: 0.95rem;
+    }
 
-      .results-header {
-        display: flex;
-        align-items: center;
-        gap: 0.8rem;
-        margin-bottom: 1.5rem;
-        padding-bottom: 1rem;
-        border-bottom: 1px solid var(--border);
-      }
+    .error-sub {
+      color: #475569;
+      font-size: 0.8rem;
+      margin-top: 0.4rem;
+    }
 
-      .results-title {
-        font-size: 1rem;
-        font-weight: 600;
-        color: var(--neon2);
-        letter-spacing: 0.05em;
-      }
+    footer {
+      margin-top: 3rem;
+      border-top: 1px solid rgba(167, 139, 250, 0.12);
+      padding-top: 2rem;
+      color: #475569;
+      font-size: 0.85rem;
+      line-height: 1.7;
+    }
 
-      .results-count {
-        background: rgba(52, 211, 153, 0.12);
-        border: 1px solid rgba(52, 211, 153, 0.3);
-        border-radius: 999px;
-        padding: 0.2rem 0.7rem;
-        font-size: 0.75rem;
-        color: var(--neon2);
-      }
+    .footer-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+      margin-bottom: 1.5rem;
+    }
 
-      .result-item {
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-        padding: 0.75rem 0;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.04);
-        animation: slide-in 0.4s ease both;
-      }
-
-      @keyframes slide-in {
-        from {
-          opacity: 0;
-          transform: translateX(-20px);
-        }
-        to {
-          opacity: 1;
-          transform: translateX(0);
-        }
-      }
-
-      .result-name {
-        min-width: 140px;
-        font-size: 0.95rem;
-        color: #e2e8f0;
-        font-weight: 500;
-        text-transform: capitalize;
-      }
-
-      .result-bar-wrap {
-        flex: 1;
-        height: 8px;
-        background: rgba(255, 255, 255, 0.05);
-        border-radius: 999px;
-        overflow: hidden;
-      }
-
-      .result-bar {
-        height: 100%;
-        border-radius: 999px;
-        transition: width 1s ease;
-        width: 0;
-      }
-
-      .result-pct {
-        min-width: 48px;
-        text-align: right;
-        font-size: 0.9rem;
-        font-weight: 600;
-        font-variant-numeric: tabular-nums;
-      }
-
-      .error-state {
-        text-align: center;
-      }
-
-      .error-icon {
-        font-size: 2.5rem;
-        margin-bottom: 0.8rem;
-      }
-      .error-msg {
-        color: #f87171;
-        font-size: 0.95rem;
-      }
-      .error-sub {
-        color: #475569;
-        font-size: 0.8rem;
-        margin-top: 0.4rem;
-      }
-
-      footer {
-        margin-top: 3rem;
-        border-top: 1px solid rgba(167, 139, 250, 0.12);
-        padding-top: 2rem;
-        color: #475569;
-        font-size: 0.85rem;
-        line-height: 1.7;
-      }
-
+    @media (max-width: 580px) {
       .footer-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 2rem;
-        margin-bottom: 1.5rem;
+        grid-template-columns: 1fr;
       }
+    }
 
-      @media (max-width: 580px) {
-        .footer-grid {
-          grid-template-columns: 1fr;
-        }
-      }
+    .footer-section h3 {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--neon1);
+      margin-bottom: 0.6rem;
+      font-weight: 500;
+    }
 
-      .footer-section h3 {
-        font-size: 0.8rem;
-        text-transform: uppercase;
-        letter-spacing: 0.12em;
-        color: var(--neon1);
-        margin-bottom: 0.6rem;
-        font-weight: 500;
-      }
+    .footer-copy {
+      text-align: center;
+      font-size: 0.75rem;
+      color: #334155;
+      padding-top: 1rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.04);
+    }
 
-      .footer-copy {
-        text-align: center;
-        font-size: 0.75rem;
-        color: #334155;
-        padding-top: 1rem;
-        border-top: 1px solid rgba(255, 255, 255, 0.04);
-      }
+    .footer-copy span {
+      color: var(--neon3);
+    }
+  </style>
+</head>
 
-      .footer-copy span {
-        color: var(--neon3);
-      }
-    </style>
-  </head>
-  <body>
-    <canvas id="particles"></canvas>
+<body>
+  <canvas id="particles"></canvas>
 
-    <div class="wrapper">
-      <header>
-        <div class="badge">✦ Vision AI ✦</div>
-        <h1>Trabajo Integrador<br />Grupo M4</h1>
-        <p class="subtitle">
-          Reconocimiento de objetos con Inteligencia Artificial
-        </p>
-        <div class="ai-indicator checking" id="aiIndicator">
-          <div class="ai-dot"></div>
-          <div class="ai-dot"></div>
-          <div class="ai-dot"></div>
-          <span class="ai-label" id="aiLabel">Verificando motor...</span>
-        </div>
-      </header>
-
-      <div class="drop-zone" id="dropZone">
-        <div id="drop-placeholder">
-          <span class="drop-icon">🖼️</span>
-          <p class="drop-title">Arrastrá tu imagen aquí</p>
-          <p class="drop-sub">O hacé clic para explorar archivos</p>
-          <span class="drop-hint" id="browseBtn">Seleccionar archivo</span>
-        </div>
-        <div id="preview-container" style="display: none">
-          <img id="preview" src="" alt="Preview" />
-          <p class="preview-name" id="previewName"></p>
-        </div>
-        <input type="file" id="fileInput" accept="image/*" />
+  <div class="wrapper">
+    <header>
+      <div class="badge">✦ Vision AI ✦</div>
+      <h1>Trabajo Integrador<br />Grupo M4</h1>
+      <p class="subtitle">
+        Reconocimiento de objetos con Inteligencia Artificial
+      </p>
+      <div class="ai-indicator checking" id="aiIndicator">
+        <div class="ai-dot"></div>
+        <div class="ai-dot"></div>
+        <div class="ai-dot"></div>
+        <span class="ai-label" id="aiLabel">Verificando motor...</span>
       </div>
+    </header>
 
-      <div
-        class="preview-actions"
-        id="preview-actions-container"
-        style="display: none"
-      >
-        <button class="btn-load" id="loadAnotherBtn">
-          📁 Cargar otra imagen
-        </button>
-        <button class="btn-clear" id="clearBtn">✕ Limpiar</button>
+    <div class="drop-zone" id="dropZone">
+      <div id="drop-placeholder">
+        <span class="drop-icon">🖼️</span>
+        <p class="drop-title">Arrastrá tu imagen aquí</p>
+        <p class="drop-sub">O hacé clic para explorar archivos</p>
+        <span class="drop-hint" id="browseBtn">Seleccionar archivo</span>
       </div>
-
-      <button class="analyze-btn-main" id="analyzeBtn" disabled>
-        ⚡ Analizar con IA
-      </button>
-
-      <div class="state-panel" id="statePanel">
-        <div class="idle-state" id="idleState">
-          <div class="idle-icon">🧠</div>
-          <p>Subí una imagen para comenzar el análisis</p>
-        </div>
-        <div class="loading-state" id="loadingState" style="display: none">
-          <div class="neural-grid" id="neuralGrid"></div>
-          <div class="loading-bars">
-            <div class="loading-bar"><div class="loading-bar-fill"></div></div>
-            <div class="loading-bar"><div class="loading-bar-fill"></div></div>
-            <div class="loading-bar"><div class="loading-bar-fill"></div></div>
-          </div>
-          <p class="loading-text" id="loadingText">Procesando imagen...</p>
-        </div>
-        <div class="results-state" id="resultsState" style="display: none">
-          <div class="results-header">
-            <span class="results-title">✦ Objetos detectados</span>
-            <span class="results-count" id="resultsCount">0 resultados</span>
-          </div>
-          <div id="resultsList"></div>
-        </div>
-        <div class="error-state" id="errorState" style="display: none">
-          <div class="error-icon">⚠️</div>
-          <p class="error-msg" id="errorMsg">
-            Error al conectar con el servidor
-          </p>
-          <p class="error-sub">
-            Verificá que el backend esté corriendo en localhost:3001
-          </p>
-        </div>
+      <div id="preview-container" style="display: none">
+        <img id="preview" src="" alt="Preview" />
+        <p class="preview-name" id="previewName"></p>
       </div>
-
-      <footer>
-        <div class="footer-grid">
-          <div class="footer-section">
-            <h3>Sobre el proyecto</h3>
-            <p>
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
-              eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
-              enim ad minim veniam, quis nostrud exercitation ullamco laboris
-              nisi ut aliquip ex ea commodo consequat.
-            </p>
-          </div>
-          <div class="footer-section">
-            <h3>Tecnologías utilizadas</h3>
-            <p>
-              Duis aute irure dolor in reprehenderit in voluptate velit esse
-              cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat
-              cupidatat non proident, sunt in culpa qui officia deserunt mollit
-              anim id est laborum consectetur adipiscing.
-            </p>
-          </div>
-        </div>
-        <div class="footer-copy">
-          Trabajo Integrador &mdash; Grupo M4 &mdash; Hecho con <span>♥</span>
-        </div>
-      </footer>
+      <input type="file" id="fileInput" accept="image/*" />
     </div>
 
-    <script>
-      const canvas = document.getElementById("particles");
-      const ctx = canvas.getContext("2d");
-      let W,
-        H,
-        particles = [],
-        animFrame;
-      let mode = "idle";
+    <div class="preview-actions" id="preview-actions-container" style="display: none">
+      <button class="btn-load" id="loadAnotherBtn">
+        📁 Cargar otra imagen
+      </button>
+      <button class="btn-clear" id="clearBtn">✕ Limpiar</button>
+    </div>
 
-      const COLORS = ["#a78bfa", "#34d399", "#60a5fa", "#f472b6", "#fbbf24"];
+    <button class="analyze-btn-main" id="analyzeBtn" disabled>
+      ⚡ Analizar con IA
+    </button>
 
-      function resize() {
-        W = canvas.width = window.innerWidth;
-        H = canvas.height = window.innerHeight;
-      }
-      resize();
-      window.addEventListener("resize", resize);
+    <div class="state-panel" id="statePanel">
+      <div class="idle-state" id="idleState">
+        <div class="idle-icon">🧠</div>
+        <p>Subí una imagen para comenzar el análisis</p>
+      </div>
+      <div class="loading-state" id="loadingState" style="display: none">
+        <div class="neural-grid" id="neuralGrid"></div>
+        <div class="loading-bars">
+          <div class="loading-bar">
+            <div class="loading-bar-fill"></div>
+          </div>
+          <div class="loading-bar">
+            <div class="loading-bar-fill"></div>
+          </div>
+          <div class="loading-bar">
+            <div class="loading-bar-fill"></div>
+          </div>
+        </div>
+        <p class="loading-text" id="loadingText">Procesando imagen...</p>
+      </div>
+      <div class="results-state" id="resultsState" style="display: none">
+        <div class="results-header">
+          <span class="results-title">✦ Objetos detectados</span>
+          <span class="results-count" id="resultsCount">0 resultados</span>
+        </div>
+        <div id="resultsList"></div>
+      </div>
+      <div class="error-state" id="errorState" style="display: none">
+        <div class="error-icon">⚠️</div>
+        <p class="error-msg" id="errorMsg">
+          Error al conectar con el servidor
+        </p>
+        <p class="error-sub">
+          Verificá que el backend esté corriendo en localhost:3001
+        </p>
+      </div>
+    </div>
 
-      function Particle(fast) {
-        this.reset = function (fast) {
-          this.x = Math.random() * W;
-          this.y = Math.random() * H;
-          this.vx = (Math.random() - 0.5) * (fast ? 2.5 : 0.8);
-          this.vy = (Math.random() - 0.5) * (fast ? 2.5 : 0.8);
-          this.r = Math.random() * (fast ? 3.5 : 2.5) + 0.5;
-          this.alpha = Math.random() * 0.6 + 0.1;
-          this.color = COLORS[Math.floor(Math.random() * COLORS.length)];
-          this.life = 0;
-          this.maxLife = 200 + Math.random() * 300;
-          this.pulse = Math.random() * Math.PI * 2;
-          this.trail = [];
-        };
-        this.reset(fast);
-      }
+    <footer>
+      <div class="footer-grid">
+        <div class="footer-section">
+          <h3>Sobre el proyecto</h3>
+          <p>
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
+            eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
+            enim ad minim veniam, quis nostrud exercitation ullamco laboris
+            nisi ut aliquip ex ea commodo consequat.
+          </p>
+        </div>
+        <div class="footer-section">
+          <h3>Tecnologías utilizadas</h3>
+          <p>
+            Duis aute irure dolor in reprehenderit in voluptate velit esse
+            cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat
+            cupidatat non proident, sunt in culpa qui officia deserunt mollit
+            anim id est laborum consectetur adipiscing.
+          </p>
+        </div>
+      </div>
+      <div class="footer-copy">
+        Trabajo Integrador &mdash; Grupo M4 &mdash; Hecho con <span>♥</span>
+      </div>
+    </footer>
+  </div>
 
-      function initParticles(count) {
-        particles = [];
-        for (let i = 0; i < count; i++)
-          particles.push(new Particle(mode === "loading"));
-      }
+  <script>
+    const canvas = document.getElementById("particles");
+    const ctx = canvas.getContext("2d");
+    let W,
+      H,
+      particles = [],
+      animFrame;
+    let mode = "idle";
 
-      function setMode(m) {
-        mode = m;
-        cancelAnimationFrame(animFrame);
-        if (m === "idle") initParticles(60);
-        if (m === "loading") initParticles(160);
-        if (m === "done") initParticles(90);
-        draw();
-      }
+    const COLORS = ["#a78bfa", "#34d399", "#60a5fa", "#f472b6", "#fbbf24"];
 
-      function draw() {
-        ctx.clearRect(0, 0, W, H);
-        const fast = mode === "loading";
-        const done = mode === "done";
+    function resize() {
+      W = canvas.width = window.innerWidth;
+      H = canvas.height = window.innerHeight;
+    }
+    resize();
+    window.addEventListener("resize", resize);
 
-        particles.forEach((p, i) => {
-          p.pulse += 0.04;
-          p.life++;
-          p.x += p.vx;
-          p.y += p.vy;
+    function Particle(fast) {
+      this.reset = function (fast) {
+        this.x = Math.random() * W;
+        this.y = Math.random() * H;
+        this.vx = (Math.random() - 0.5) * (fast ? 2.5 : 0.8);
+        this.vy = (Math.random() - 0.5) * (fast ? 2.5 : 0.8);
+        this.r = Math.random() * (fast ? 3.5 : 2.5) + 0.5;
+        this.alpha = Math.random() * 0.6 + 0.1;
+        this.color = COLORS[Math.floor(Math.random() * COLORS.length)];
+        this.life = 0;
+        this.maxLife = 200 + Math.random() * 300;
+        this.pulse = Math.random() * Math.PI * 2;
+        this.trail = [];
+      };
+      this.reset(fast);
+    }
 
-          if (fast) {
-            p.vx += (Math.random() - 0.5) * 0.1;
-            p.vy += (Math.random() - 0.5) * 0.1;
-            const speed = Math.sqrt(p.vx * p.vx + p.vy * p.vy);
-            if (speed > 3) {
-              p.vx *= 3 / speed;
-              p.vy *= 3 / speed;
-            }
-          }
+    function initParticles(count) {
+      particles = [];
+      for (let i = 0; i < count; i++)
+        particles.push(new Particle(mode === "loading"));
+    }
 
-          if (p.x < 0) p.x = W;
-          if (p.x > W) p.x = 0;
-          if (p.y < 0) p.y = H;
-          if (p.y > H) p.y = 0;
+    function setMode(m) {
+      mode = m;
+      cancelAnimationFrame(animFrame);
+      if (m === "idle") initParticles(60);
+      if (m === "loading") initParticles(160);
+      if (m === "done") initParticles(90);
+      draw();
+    }
 
-          if (p.life > p.maxLife) p.reset(fast);
+    function draw() {
+      ctx.clearRect(0, 0, W, H);
+      const fast = mode === "loading";
+      const done = mode === "done";
 
-          const lifeRatio = p.life / p.maxLife;
-          const fadeAlpha =
-            lifeRatio < 0.1
-              ? lifeRatio * 10
-              : lifeRatio > 0.9
-                ? (1 - lifeRatio) * 10
-                : 1;
-          const r = p.r * (1 + 0.3 * Math.sin(p.pulse));
-
-          ctx.beginPath();
-          ctx.arc(p.x, p.y, r, 0, Math.PI * 2);
-          ctx.fillStyle =
-            p.color +
-            Math.floor(p.alpha * fadeAlpha * 255)
-              .toString(16)
-              .padStart(2, "0");
-          ctx.fill();
-
-          if (fast || done) {
-            ctx.beginPath();
-            ctx.moveTo(p.x, p.y);
-            ctx.lineTo(p.x - p.vx * 4, p.y - p.vy * 4);
-            ctx.strokeStyle = p.color + "44";
-            ctx.lineWidth = r * 0.5;
-            ctx.stroke();
-          }
-        });
+      particles.forEach((p, i) => {
+        p.pulse += 0.04;
+        p.life++;
+        p.x += p.vx;
+        p.y += p.vy;
 
         if (fast) {
-          for (let i = 0; i < particles.length; i++) {
-            for (let j = i + 1; j < particles.length; j++) {
-              const a = particles[i],
-                b = particles[j];
-              const dx = a.x - b.x,
-                dy = a.y - b.y;
-              const dist = Math.sqrt(dx * dx + dy * dy);
-              if (dist < 80) {
-                ctx.beginPath();
-                ctx.moveTo(a.x, a.y);
-                ctx.lineTo(b.x, b.y);
-                ctx.strokeStyle =
-                  a.color +
-                  Math.floor((1 - dist / 80) * 40)
-                    .toString(16)
-                    .padStart(2, "0");
-                ctx.lineWidth = 0.5;
-                ctx.stroke();
-              }
+          p.vx += (Math.random() - 0.5) * 0.1;
+          p.vy += (Math.random() - 0.5) * 0.1;
+          const speed = Math.sqrt(p.vx * p.vx + p.vy * p.vy);
+          if (speed > 3) {
+            p.vx *= 3 / speed;
+            p.vy *= 3 / speed;
+          }
+        }
+
+        if (p.x < 0) p.x = W;
+        if (p.x > W) p.x = 0;
+        if (p.y < 0) p.y = H;
+        if (p.y > H) p.y = 0;
+
+        if (p.life > p.maxLife) p.reset(fast);
+
+        const lifeRatio = p.life / p.maxLife;
+        const fadeAlpha =
+          lifeRatio < 0.1
+            ? lifeRatio * 10
+            : lifeRatio > 0.9
+              ? (1 - lifeRatio) * 10
+              : 1;
+        const r = p.r * (1 + 0.3 * Math.sin(p.pulse));
+
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, r, 0, Math.PI * 2);
+        ctx.fillStyle =
+          p.color +
+          Math.floor(p.alpha * fadeAlpha * 255)
+            .toString(16)
+            .padStart(2, "0");
+        ctx.fill();
+
+        if (fast || done) {
+          ctx.beginPath();
+          ctx.moveTo(p.x, p.y);
+          ctx.lineTo(p.x - p.vx * 4, p.y - p.vy * 4);
+          ctx.strokeStyle = p.color + "44";
+          ctx.lineWidth = r * 0.5;
+          ctx.stroke();
+        }
+      });
+
+      if (fast) {
+        for (let i = 0; i < particles.length; i++) {
+          for (let j = i + 1; j < particles.length; j++) {
+            const a = particles[i],
+              b = particles[j];
+            const dx = a.x - b.x,
+              dy = a.y - b.y;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+            if (dist < 80) {
+              ctx.beginPath();
+              ctx.moveTo(a.x, a.y);
+              ctx.lineTo(b.x, b.y);
+              ctx.strokeStyle =
+                a.color +
+                Math.floor((1 - dist / 80) * 40)
+                  .toString(16)
+                  .padStart(2, "0");
+              ctx.lineWidth = 0.5;
+              ctx.stroke();
             }
           }
         }
-
-        animFrame = requestAnimationFrame(draw);
       }
 
-      setMode("idle");
+      animFrame = requestAnimationFrame(draw);
+    }
 
-      const dropZone = document.getElementById("dropZone");
-      const fileInput = document.getElementById("fileInput");
-      const browseBtn = document.getElementById("browseBtn");
-      const clearBtn = document.getElementById("clearBtn");
-      const loadAnotherBtn = document.getElementById("loadAnotherBtn");
-      const preview = document.getElementById("preview");
-      const previewName = document.getElementById("previewName");
-      const previewContainer = document.getElementById("preview-container");
-      const previewActions = document.getElementById(
-        "preview-actions-container",
-      );
-      const dropPlaceholder = document.getElementById("drop-placeholder");
-      const analyzeBtn = document.getElementById("analyzeBtn");
+    setMode("idle");
 
-      let currentFile = null;
+    const dropZone = document.getElementById("dropZone");
+    const fileInput = document.getElementById("fileInput");
+    const browseBtn = document.getElementById("browseBtn");
+    const clearBtn = document.getElementById("clearBtn");
+    const loadAnotherBtn = document.getElementById("loadAnotherBtn");
+    const preview = document.getElementById("preview");
+    const previewName = document.getElementById("previewName");
+    const previewContainer = document.getElementById("preview-container");
+    const previewActions = document.getElementById(
+      "preview-actions-container",
+    );
+    const dropPlaceholder = document.getElementById("drop-placeholder");
+    const analyzeBtn = document.getElementById("analyzeBtn");
 
-      function loadImage(file) {
-        if (!file || !file.type.startsWith("image/")) return;
-        currentFile = file;
-        const url = URL.createObjectURL(file);
-        preview.src = url;
-        previewName.textContent =
-          file.name + " (" + (file.size / 1024).toFixed(1) + " KB)";
-        dropPlaceholder.style.display = "none";
-        previewContainer.style.display = "block";
-        previewActions.style.display = "flex";
-        dropZone.classList.add("has-image");
-        analyzeBtn.disabled = false;
-        showIdle();
-      }
+    let currentFile = null;
 
-      dropZone.addEventListener("click", (e) => {
-        if (currentFile) return;
-        if (
-          e.target === browseBtn ||
-          e.target === dropZone ||
-          e.target.closest("#drop-placeholder")
-        )
-          fileInput.click();
-      });
-      browseBtn.addEventListener("click", (e) => {
-        e.stopPropagation();
+    function loadImage(file) {
+      if (!file || !file.type.startsWith("image/")) return;
+      currentFile = file;
+      const url = URL.createObjectURL(file);
+      preview.src = url;
+      previewName.textContent =
+        file.name + " (" + (file.size / 1024).toFixed(1) + " KB)";
+      dropPlaceholder.style.display = "none";
+      previewContainer.style.display = "block";
+      previewActions.style.display = "flex";
+      dropZone.classList.add("has-image");
+      analyzeBtn.disabled = false;
+      showIdle();
+    }
+
+    dropZone.addEventListener("click", (e) => {
+      if (currentFile) return;
+      if (
+        e.target === browseBtn ||
+        e.target === dropZone ||
+        e.target.closest("#drop-placeholder")
+      )
         fileInput.click();
-      });
-      fileInput.addEventListener("change", () => {
-        if (fileInput.files[0]) loadImage(fileInput.files[0]);
-      });
+    });
+    browseBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      fileInput.click();
+    });
+    fileInput.addEventListener("change", () => {
+      if (fileInput.files[0]) loadImage(fileInput.files[0]);
+    });
 
-      dropZone.addEventListener("dragover", (e) => {
-        e.preventDefault();
-        dropZone.classList.add("dragover");
-      });
-      dropZone.addEventListener("dragleave", () =>
-        dropZone.classList.remove("dragover"),
-      );
-      dropZone.addEventListener("drop", (e) => {
-        e.preventDefault();
-        dropZone.classList.remove("dragover");
-        const file = e.dataTransfer.files[0];
-        if (file) loadImage(file);
-      });
+    dropZone.addEventListener("dragover", (e) => {
+      e.preventDefault();
+      dropZone.classList.add("dragover");
+    });
+    dropZone.addEventListener("dragleave", () =>
+      dropZone.classList.remove("dragover"),
+    );
+    dropZone.addEventListener("drop", (e) => {
+      e.preventDefault();
+      dropZone.classList.remove("dragover");
+      const file = e.dataTransfer.files[0];
+      if (file) loadImage(file);
+    });
 
-      clearBtn.addEventListener("click", () => {
-        currentFile = null;
-        preview.src = "";
-        fileInput.value = "";
-        dropPlaceholder.style.display = "block";
-        previewContainer.style.display = "none";
-        previewActions.style.display = "none";
-        dropZone.classList.remove("has-image");
-        analyzeBtn.disabled = true;
-        showIdle();
-      });
+    clearBtn.addEventListener("click", () => {
+      currentFile = null;
+      preview.src = "";
+      fileInput.value = "";
+      dropPlaceholder.style.display = "block";
+      previewContainer.style.display = "none";
+      previewActions.style.display = "none";
+      dropZone.classList.remove("has-image");
+      analyzeBtn.disabled = true;
+      showIdle();
+    });
 
-      loadAnotherBtn.addEventListener("click", () => fileInput.click());
+    loadAnotherBtn.addEventListener("click", () => fileInput.click());
 
-      function showIdle() {
-        document.getElementById("idleState").style.display = "flex";
-        document.getElementById("loadingState").style.display = "none";
-        document.getElementById("resultsState").style.display = "none";
-        document.getElementById("errorState").style.display = "none";
-        setMode("idle");
+    function showIdle() {
+      document.getElementById("idleState").style.display = "flex";
+      document.getElementById("loadingState").style.display = "none";
+      document.getElementById("resultsState").style.display = "none";
+      document.getElementById("errorState").style.display = "none";
+      setMode("idle");
+    }
+
+    function showLoading() {
+      document.getElementById("idleState").style.display = "none";
+      document.getElementById("loadingState").style.display = "block";
+      document.getElementById("resultsState").style.display = "none";
+      document.getElementById("errorState").style.display = "none";
+      setupNeuralGrid();
+      animateLoadingText();
+      setMode("loading");
+    }
+
+    function showResults(data) {
+      document.getElementById("idleState").style.display = "none";
+      document.getElementById("loadingState").style.display = "none";
+      document.getElementById("resultsState").style.display = "block";
+      document.getElementById("errorState").style.display = "none";
+      renderResults(data);
+      setMode("done");
+    }
+
+    function showError(msg) {
+      document.getElementById("idleState").style.display = "none";
+      document.getElementById("loadingState").style.display = "none";
+      document.getElementById("resultsState").style.display = "none";
+      document.getElementById("errorState").style.display = "flex";
+      document.getElementById("errorMsg").textContent =
+        msg || "Error al conectar con el servidor";
+      setMode("idle");
+    }
+
+    function setupNeuralGrid() {
+      const grid = document.getElementById("neuralGrid");
+      grid.innerHTML = "";
+      for (let i = 0; i < 25; i++) {
+        const d = document.createElement("div");
+        d.className = "neural-dot";
+        d.style.animationDelay = Math.random() * 1.5 + "s";
+        grid.appendChild(d);
       }
-
-      function showLoading() {
-        document.getElementById("idleState").style.display = "none";
-        document.getElementById("loadingState").style.display = "block";
-        document.getElementById("resultsState").style.display = "none";
-        document.getElementById("errorState").style.display = "none";
-        setupNeuralGrid();
-        animateLoadingText();
-        setMode("loading");
-      }
-
-      function showResults(data) {
-        document.getElementById("idleState").style.display = "none";
-        document.getElementById("loadingState").style.display = "none";
-        document.getElementById("resultsState").style.display = "block";
-        document.getElementById("errorState").style.display = "none";
-        renderResults(data);
-        setMode("done");
-      }
-
-      function showError(msg) {
-        document.getElementById("idleState").style.display = "none";
-        document.getElementById("loadingState").style.display = "none";
-        document.getElementById("resultsState").style.display = "none";
-        document.getElementById("errorState").style.display = "flex";
-        document.getElementById("errorMsg").textContent =
-          msg || "Error al conectar con el servidor";
-        setMode("idle");
-      }
-
-      function setupNeuralGrid() {
-        const grid = document.getElementById("neuralGrid");
-        grid.innerHTML = "";
-        for (let i = 0; i < 25; i++) {
-          const d = document.createElement("div");
-          d.className = "neural-dot";
-          d.style.animationDelay = Math.random() * 1.5 + "s";
-          grid.appendChild(d);
+      let count = 0;
+      const iv = setInterval(() => {
+        if (mode !== "loading") {
+          clearInterval(iv);
+          return;
         }
-        let count = 0;
-        const iv = setInterval(() => {
-          if (mode !== "loading") {
-            clearInterval(iv);
-            return;
-          }
-          const dots = grid.querySelectorAll(".neural-dot");
-          const idx = Math.floor(Math.random() * dots.length);
-          dots.forEach((d) => d.classList.remove("active"));
-          for (let k = 0; k < 5; k++)
-            dots[(idx + k) % dots.length].classList.add("active");
-          count++;
-          if (count > 60) clearInterval(iv);
-        }, 120);
-      }
+        const dots = grid.querySelectorAll(".neural-dot");
+        const idx = Math.floor(Math.random() * dots.length);
+        dots.forEach((d) => d.classList.remove("active"));
+        for (let k = 0; k < 5; k++)
+          dots[(idx + k) % dots.length].classList.add("active");
+        count++;
+        if (count > 60) clearInterval(iv);
+      }, 120);
+    }
 
-      const loadingMsgs = [
-        "Procesando imagen...",
-        "Extrayendo características...",
-        "Consultando red neuronal...",
-        "Clasificando objetos...",
-        "Calculando probabilidades...",
-        "Casi listo...",
-      ];
-      let msgIdx = 0,
-        msgIv;
-      function animateLoadingText() {
-        clearInterval(msgIv);
-        msgIdx = 0;
-        const el = document.getElementById("loadingText");
-        msgIv = setInterval(() => {
-          if (mode !== "loading") {
-            clearInterval(msgIv);
-            return;
-          }
-          el.textContent = loadingMsgs[msgIdx % loadingMsgs.length];
-          msgIdx++;
-        }, 900);
-      }
+    const loadingMsgs = [
+      "Procesando imagen...",
+      "Extrayendo características...",
+      "Consultando red neuronal...",
+      "Clasificando objetos...",
+      "Calculando probabilidades...",
+      "Casi listo...",
+    ];
+    let msgIdx = 0,
+      msgIv;
+    function animateLoadingText() {
+      clearInterval(msgIv);
+      msgIdx = 0;
+      const el = document.getElementById("loadingText");
+      msgIv = setInterval(() => {
+        if (mode !== "loading") {
+          clearInterval(msgIv);
+          return;
+        }
+        el.textContent = loadingMsgs[msgIdx % loadingMsgs.length];
+        msgIdx++;
+      }, 900);
+    }
 
-      function getBarColor(pct) {
-        if (pct >= 70) return "linear-gradient(90deg, #34d399, #059669)";
-        if (pct >= 40) return "linear-gradient(90deg, #60a5fa, #3b82f6)";
-        if (pct >= 20) return "linear-gradient(90deg, #a78bfa, #7c3aed)";
-        return "linear-gradient(90deg, #f472b6, #db2777)";
-      }
+    function getBarColor(pct) {
+      if (pct >= 70) return "linear-gradient(90deg, #34d399, #059669)";
+      if (pct >= 40) return "linear-gradient(90deg, #60a5fa, #3b82f6)";
+      if (pct >= 20) return "linear-gradient(90deg, #a78bfa, #7c3aed)";
+      return "linear-gradient(90deg, #f472b6, #db2777)";
+    }
 
-      function getPctColor(pct) {
-        if (pct >= 70) return "#34d399";
-        if (pct >= 40) return "#60a5fa";
-        if (pct >= 20) return "#a78bfa";
-        return "#f472b6";
-      }
+    function getPctColor(pct) {
+      if (pct >= 70) return "#34d399";
+      if (pct >= 40) return "#60a5fa";
+      if (pct >= 20) return "#a78bfa";
+      return "#f472b6";
+    }
 
-      function renderResults(data) {
-        const list = document.getElementById("resultsList");
-        list.innerHTML = "";
-        document.getElementById("resultsCount").textContent =
-          data.length + " resultado" + (data.length !== 1 ? "s" : "");
+    function renderResults(data) {
+      const list = document.getElementById("resultsList");
+      list.innerHTML = "";
+      document.getElementById("resultsCount").textContent =
+        data.length + " resultado" + (data.length !== 1 ? "s" : "");
 
-        const sorted = [...data].sort((a, b) => b.probability - a.probability);
-        sorted.forEach((item, i) => {
-          const pct = parseFloat(item.probability);
-          const div = document.createElement("div");
-          div.className = "result-item";
-          div.style.animationDelay = i * 0.07 + "s";
-          div.innerHTML = `
+      const sorted = [...data].sort((a, b) => b.probability - a.probability);
+      sorted.forEach((item, i) => {
+        const pct = parseFloat(item.probability);
+        const div = document.createElement("div");
+        div.className = "result-item";
+        div.style.animationDelay = i * 0.07 + "s";
+        div.innerHTML = `
       <span class="result-name">${item.name}</span>
       <div class="result-bar-wrap">
         <div class="result-bar" id="bar${i}" style="background: ${getBarColor(pct)}"></div>
       </div>
       <span class="result-pct" style="color:${getPctColor(pct)}">${pct.toFixed(1)}%</span>
     `;
-          list.appendChild(div);
-          setTimeout(
-            () => {
-              const bar = document.getElementById("bar" + i);
-              if (bar) bar.style.width = Math.min(pct, 100) + "%";
-            },
-            100 + i * 70,
-          );
+        list.appendChild(div);
+        setTimeout(
+          () => {
+            const bar = document.getElementById("bar" + i);
+            if (bar) bar.style.width = Math.min(pct, 100) + "%";
+          },
+          100 + i * 70,
+        );
+      });
+    }
+
+    async function analyze() {
+      if (!currentFile) return;
+      analyzeBtn.disabled = true;
+      showLoading();
+
+      const form = new FormData();
+      form.append("image", currentFile);
+
+      try {
+        const res = await fetch('http://localhost:3001/analyze', {
+          method: 'POST',
+          body: form
         });
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        const data = await res.json();
+
+        /* Simulación eliminada — respuesta real del worker via RabbitMQ
+        await new Promise((resolve) => setTimeout(resolve, 2000));
+        const data = [
+          { name: "Gato", probability: 85.3 },
+          { name: "Silla", probability: 42.7 },
+          { name: "Mesa", probability: 18.4 },
+          { name: "Laptop", probability: 9.2 },
+        ];
+        */
+
+        clearInterval(msgIv);
+        showResults(data);
+      } catch (err) {
+        clearInterval(msgIv);
+        showError("No se pudo conectar: " + err.message);
+      } finally {
+        analyzeBtn.disabled = false;
       }
+    }
 
-      async function analyze() {
-        if (!currentFile) return;
-        analyzeBtn.disabled = true;
-        showLoading();
+    analyzeBtn.addEventListener("click", analyze);
 
-        const form = new FormData();
-        form.append("image", currentFile);
+    document.getElementById("idleState").style.display = "flex";
+    document.getElementById("loadingState").style.display = "none";
+    document.getElementById("resultsState").style.display = "none";
+    document.getElementById("errorState").style.display = "none";
 
-        try {
-          /*
-    const res = await fetch('http://localhost:3001/analyze', {
-      method: 'POST',
-      body: form
-    });
-    if (!res.ok) throw new Error('HTTP ' + res.status);
-    const data = await res.json();
-    */
+    // ── Health check ───────────────────────────────────────────────────────────────
+    const aiIndicator = document.getElementById("aiIndicator");
+    const aiLabel = document.getElementById("aiLabel");
+    const HEALTH_URL = "http://localhost:3001/health";
+    const POLL_INTERVAL = 10000; // cada 10 segundos
 
-          // Simulación de respuesta del backend
-          await new Promise((resolve) => setTimeout(resolve, 2000));
-          const data = [
-            { name: "Gato", probability: 85.3 },
-            { name: "Silla", probability: 42.7 },
-            { name: "Mesa", probability: 18.4 },
-            { name: "Laptop", probability: 9.2 },
-          ];
-
-          clearInterval(msgIv);
-          showResults(data);
-        } catch (err) {
-          clearInterval(msgIv);
-          showError("No se pudo conectar: " + err.message);
-        } finally {
-          analyzeBtn.disabled = false;
-        }
+    function setAiStatus(status) {
+      aiIndicator.classList.remove("checking", "offline");
+      if (status === "checking") {
+        aiIndicator.classList.add("checking");
+        aiLabel.textContent = "Verificando motor...";
+      } else if (status === "online") {
+        aiLabel.textContent = "Motor de IA activo";
+      } else {
+        aiIndicator.classList.add("offline");
+        aiLabel.textContent = "Motor de IA apagado";
       }
+    }
 
-      analyzeBtn.addEventListener("click", analyze);
-
-      document.getElementById("idleState").style.display = "flex";
-      document.getElementById("loadingState").style.display = "none";
-      document.getElementById("resultsState").style.display = "none";
-      document.getElementById("errorState").style.display = "none";
-
-      // ── Health check ───────────────────────────────────────────────────────────────
-      const aiIndicator = document.getElementById("aiIndicator");
-      const aiLabel = document.getElementById("aiLabel");
-      const HEALTH_URL = "http://localhost:3001/health";
-      const POLL_INTERVAL = 10000; // cada 10 segundos
-
-      function setAiStatus(status) {
-        aiIndicator.classList.remove("checking", "offline");
-        if (status === "checking") {
-          aiIndicator.classList.add("checking");
-          aiLabel.textContent = "Verificando motor...";
-        } else if (status === "online") {
-          aiLabel.textContent = "Motor de IA activo";
-        } else {
-          aiIndicator.classList.add("offline");
-          aiLabel.textContent = "Motor de IA apagado";
-        }
+    async function checkHealth() {
+      try {
+        const res = await fetch(HEALTH_URL, {
+          signal: AbortSignal.timeout(4000),
+        });
+        const data = await res.json();
+        setAiStatus(data.status === "ok" ? "online" : "offline");
+      } catch {
+        setAiStatus("offline");
       }
+    }
 
-      async function checkHealth() {
-        try {
-          const res = await fetch(HEALTH_URL, {
-            signal: AbortSignal.timeout(4000),
-          });
-          const data = await res.json();
-          setAiStatus(data.status === "ok" ? "online" : "offline");
-        } catch {
-          setAiStatus("offline");
-        }
-      }
+    // Primera verificación al cargar
+    checkHealth();
+    // Polling periódico
+    setInterval(checkHealth, POLL_INTERVAL);
+  </script>
+</body>
 
-      // Primera verificación al cargar
-      checkHealth();
-      // Polling periódico
-      setInterval(checkHealth, POLL_INTERVAL);
-    </script>
-  </body>
 </html>
