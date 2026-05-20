@@ -5,20 +5,15 @@
 # Flujo:
 #   1. Backend publica bytes de imagen en "image_queue".
 #   2. KEDA detecta el mensaje y levanta un Job (1 Job por mensaje).
-#   3. El Pod lee la imagen, genera 4 labels con probabilidades aleatorias
-#      y publica el resultado JSON en "result_queue".
-#   4. El backend (publishAndWait) lee result_queue y responde al frontend.
+#   3. El Pod procesa la imagen y publica el resultado en reply_to.
+#   4. El backend (waitQueue) lee la respuesta y la devuelve al frontend.
 #
-# ── Solución Windows / Docker Desktop ───────────────────────────────────────
-#   Los pods de k8s NO están en la red docker del compose.
-#   Docker Desktop inyecta "host.docker.internal" en todos los pods,
-#   que resuelve a la IP de la máquina host.
-#   RabbitMQ expone el puerto 30672 en el host (ver docker-compose.yml),
-#   por eso tanto los pods como el TriggerAuthentication usan ese puerto.
-# ────────────────────────────────────────────────────────────────────────────
- 
+# ── Red ─────────────────────────────────────────────────────────────────────
+#   RabbitMQ corre en docker compose y expone el puerto 30672 en el host.
+#   Los pods de K8s usan host.docker.internal:30672 para llegar a RabbitMQ.
+# ─────────────────────────────────────────────────────────────────────────────
+
 ---
-# Secret con la URL AMQP que usa KEDA para conectarse a RabbitMQ
 apiVersion: v1
 kind: Secret
 metadata:
@@ -26,11 +21,9 @@ metadata:
   namespace: tp-integrador
 type: Opaque
 stringData:
-  # host.docker.internal:30672 → llega al contenedor rabbitmq en el host
   host: "amqp://admin:admin@host.docker.internal:30672/"
- 
+
 ---
-# TriggerAuthentication: le dice a KEDA cómo autenticarse con RabbitMQ
 apiVersion: keda.sh/v1alpha1
 kind: TriggerAuthentication
 metadata:
@@ -41,59 +34,54 @@ spec:
     - parameter: host
       name: rabbitmq-secret
       key: host
- 
+
 ---
-# ScaledJob: crea un Job de k8s por cada mensaje en image_queue
 apiVersion: keda.sh/v1alpha1
 kind: ScaledJob
 metadata:
   name: worker
   namespace: tp-integrador
 spec:
- 
-  # ── Política de escalado ──────────────────────────────────────────────────
-  pollingInterval: 5          # KEDA revisa la cola cada 5 segundos
-  maxReplicaCount: 10         # máximo de Jobs paralelos
+  pollingInterval: 5
+  maxReplicaCount: 10
   successfulJobsHistoryLimit: 3
   failedJobsHistoryLimit: 3
- 
-  # ── Trigger: escala cuando hay mensajes en image_queue ───────────────────
+
   triggers:
     - type: rabbitmq
       metadata:
         protocol: amqp
         queueName: image_queue
         mode: QueueLength
-        value: "1"            # 1 Job por cada mensaje pendiente
+        value: "1"
       authenticationRef:
         name: rabbitmq-auth
- 
-  # ── Template del Job ──────────────────────────────────────────────────────
+
   jobTargetRef:
-      backoffLimit: 2
-      template:
-        metadata:
-          labels:
-            app: worker
-        spec:
-          restartPolicy: Never
-          containers:
-            - name: worker
-              image: francovallejos885/tp-concurrente-worker:v1.0
-              imagePullPolicy: Always
-              env:
-                - name: RABBITMQ_HOST
-                  value: "host.docker.internal"
-                - name: RABBITMQ_PORT
-                  value: "30672"
-                - name: RABBITMQ_USER
-                  value: "admin"
-                - name: RABBITMQ_PASS
-                  value: "admin"
-              resources:
-                requests:
-                  cpu: "100m"
-                  memory: "128Mi"
-                limits:
-                  cpu: "500m"
-                  memory: "256Mi"
+    backoffLimit: 2
+    template:
+      metadata:
+        labels:
+          app: worker
+      spec:
+        restartPolicy: Never
+        containers:
+          - name: worker
+            image: tp-integrador-worker:latest
+            imagePullPolicy: Never        # usa solo la imagen local del nodo
+            env:
+              - name: RABBITMQ_HOST
+                value: "host.docker.internal"
+              - name: RABBITMQ_PORT
+                value: "30672"
+              - name: RABBITMQ_USER
+                value: "admin"
+              - name: RABBITMQ_PASS
+                value: "admin"
+            resources:
+              requests:
+                cpu: "100m"
+                memory: "128Mi"
+              limits:
+                cpu: "500m"
+                memory: "256Mi"

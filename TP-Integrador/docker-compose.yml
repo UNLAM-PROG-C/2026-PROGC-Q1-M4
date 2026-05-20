@@ -1,5 +1,5 @@
 services:
- 
+
   frontend:
     build:
       context: ./frontend
@@ -11,11 +11,8 @@ services:
           target: /usr/share/nginx/html/index.html
     ports:
       - "8080:80"
-    #depends_on:
-      #backend:
-        #condition: service_healthy
     restart: unless-stopped
- 
+
   backend:
     build:
       context: ./backend
@@ -24,8 +21,6 @@ services:
       - "3001:3001"
     environment:
       PORT: "3001"
-      # Dentro de la red docker "rabbitmq" resuelve por nombre de servicio,
-      # puerto 5672 interno. El RabbitPublisher.java lee estas variables.
       RABBITMQ_HOST: rabbitmq
       RABBITMQ_PORT: "5672"
       RABBITMQ_USER: admin
@@ -39,7 +34,21 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
- 
+
+  worker:
+    build:
+      context: ./worker
+      dockerfile: Dockerfile.worker
+    environment:
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: "5672"
+      RABBITMQ_USER: admin
+      RABBITMQ_PASS: admin
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    restart: unless-stopped
+
   rabbitmq:
     image: rabbitmq:3.13-management-alpine
     container_name: rabbitmq
