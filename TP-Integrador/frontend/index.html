@@ -687,7 +687,7 @@
   <div class="wrapper">
     <header>
       <div class="badge">✦ Vision AI ✦</div>
-      <h1>Trabajo Integrador<br />Grupo M4</h1>
+      <h1>IdentifAI<br /></h1>
       <p class="subtitle">
         Reconocimiento de objetos con Inteligencia Artificial
       </p>
@@ -726,8 +726,10 @@
 
     <div class="state-panel" id="statePanel">
       <div class="idle-state" id="idleState">
-        <div class="idle-icon">🧠</div>
-        <p>Subí una imagen para comenzar el análisis</p>
+        <div style="display: flex; justify-content: center; align-items: center;font-size: 40px;">🧠</div>
+        <div style="display: flex; justify-content: center; align-items: center;">
+          <p>Subí una imagen para comenzar el análisis</p>
+        </div>
       </div>
       <div class="loading-state" id="loadingState" style="display: none">
         <div class="neural-grid" id="neuralGrid"></div>
@@ -767,19 +769,18 @@
         <div class="footer-section">
           <h3>Sobre el proyecto</h3>
           <p>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
-            eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
-            enim ad minim veniam, quis nostrud exercitation ullamco laboris
-            nisi ut aliquip ex ea commodo consequat.
+            <strong>IdentifAI</strong> es una plataforma web distribuida y de alta disponibilidad diseñada para el reconocimiento automático 
+            de objetos en imágenes utilizando Inteligencia Artificial. La aplicación permite a los usuarios cargar archivos 
+            multimedia de manera intuitiva y recibir un análisis preciso en tiempo real.
           </p>
         </div>
         <div class="footer-section">
           <h3>Tecnologías utilizadas</h3>
           <p>
-            Duis aute irure dolor in reprehenderit in voluptate velit esse
-            cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat
-            cupidatat non proident, sunt in culpa qui officia deserunt mollit
-            anim id est laborum consectetur adipiscing.
+            La plataforma utiliza una arquitectura de microservicios completamente contenedorizada 
+            con Docker. Combina un frontend moderno en JavaScript con un backend en Java, interconectados de forma 
+            asíncrona mediante el broker de mensajería RabbitMQ hacia un motor de procesamiento en Python potenciado 
+            por el modelo de visión computacional YOLOv8.
           </p>
         </div>
       </div>
