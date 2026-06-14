@@ -1,11 +1,9 @@
 FROM nginx:alpine
 
 COPY index.html /usr/share/nginx/html/index.html
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
 
 EXPOSE 80
 
-# Inyecta BACKEND_URL como variable JS antes de servir el HTML.
-# Si no se pasa la variable de entorno, queda vacío y el JS usa el fallback localhost:3001.
-CMD ["/bin/sh", "-c", \
-  "sed -i \"s|window.BACKEND_URL || \\\"http://localhost:3001\\\"|window.BACKEND_URL = '${BACKEND_URL:-http://localhost:3001}'|g\" /usr/share/nginx/html/index.html && \
-  nginx -g 'daemon off;'"]
+ENTRYPOINT ["/entrypoint.sh"]
