@@ -1,0 +1,166 @@
+--- code[0] (len=304) ---
+import tensorflow as tf
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Dense, Conv2D, Flatten, Dropout, MaxPooling2D, Activation, BatchNormalization
+from tensorflow.keras.preprocessing import image
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+
+--- code[1] (len=142) ---
+fashion_mnist_data = tf.keras.datasets.fashion_mnist
+(train_images, train_labels), (test_images, test_labels) = fashion_mnist_data.load_data()
+
+--- code[2] (len=18) ---
+train_images.shape
+
+--- code[3] (len=23) ---
+np.unique(train_labels)
+
+--- code[4] (len=156) ---
+labels = [
+    'Remera',
+    'Pantalon',
+    'Sueter',
+    'Vestido',
+    'Abrigo',
+    'Sandalia',
+    'Camisa',
+    'Zapatilla',
+    'Bolso',
+    'Bota'
+]
+
+--- code[5] (len=65) ---
+train_images = train_images/255.0
+test_images = test_images/255.0
+
+--- code[6] (len=183) ---
+len(train_images) * .85 #51000
+len(train_images) - 51000 #9000
+
+X_train = train_images[:51000]
+X_val= train_images[51000:]
+
+Y_train = train_labels[:51000]
+Y_val = train_labels[51000:]
+
+--- code[7] (len=101) ---
+i = 100
+img = train_images[i,:,:]
+plt.imshow(img)
+plt.show
+print(f"label: {labels[train_labels[i]]}")
+
+--- code[8] (len=815) ---
+model = Sequential()
+model.add(Conv2D(32, (3, 3), padding="same",input_shape=(28,28,1)))
+model.add(Activation("relu"))
+model.add(BatchNormalization(axis=3))
+model.add(Conv2D(32, (3, 3), padding="same"))
+model.add(Activation("relu"))
+model.add(BatchNormalization(axis=3))
+model.add(MaxPooling2D(pool_size=(2, 2)))
+model.add(Dropout(0.25))
+model.add(Conv2D(64, (3, 3), padding="same"))
+model.add(Activa
+
+--- code[9] (len=35) ---
+train_images[..., np.newaxis].shape
+
+--- code[10] (len=107) ---
+model.compile(
+    optimizer='adam',
+    loss='sparse_categorical_crossentropy',
+    metrics=['accuracy']
+)
+
+--- code[11] (len=130) ---
+history = model.fit(X_train[..., np.newaxis], Y_train, epochs=80, batch_size=128, validation_data=(X_val[..., np.newaxis], Y_val))
+
+--- code[12] (len=37) ---
+df = pd.DataFrame(history.history)
+df
+
+--- code[13] (len=113) ---
+loss_plot = df.plot(y='loss', title='loss vs epochs', legend=False)
+loss_plot.set(xlabel='Epochs', ylabel='loss')
+
+--- code[14] (len=123) ---
+acc_plot = df.plot(y='accuracy', title='accuracy vs epochs', legend=False)
+acc_plot.set(xlabel='Epochs', ylabel='Accuracy')
+
+--- code[15] (len=24) ---
+print(test_images.shape)
+
+--- code[16] (len=523) ---
+## Extracción y Empaquetado de Pesos
+
+Una vez entrenada la CNN, extraemos todos los parámetros aprendidos (pesos, biases, medias y varianzas de BatchNormalization) y los serializamos en un archivo **.pkl**. Este archivo será consumido por el motor de inferencia CUDA para ejecutar la red en GPU sin depender de TensorFlow/Keras.
+
+El proceso incluye:
+1. **Extracción** de pesos de cada capa (Conv2D, B
+
+--- code[17] (len=152) ---
+inx = np.random.choice(test_images.shape[0])
+test_image = test_images[inx]
+plt.imshow(test_image)
+plt.show()
+print(f'Label: {labels[test_labels[inx]]}')
+
+--- code[18] (len=489) ---
+# Pipeline de Inferencia CUDA con los Pesos de la CNN
+
+A continuación implementamos el pipeline de inferencia completo en **CUDA C++**, compilado y ejecutado desde Python mediante **PyCUDA**. Los kernels implementados replican cada operación de la red:
+- Normalización de entrada
+- Convolución 2D (con padding y stride)
+- ReLU (activación)
+- BatchNormalization
+- MaxPooling 2×2
+- Flatten
+- Dense (mat
+
+--- code[19] (len=6545) ---
+import pickle
+import numpy as np
+
+def extract_model_params(model) -> dict:
+    """
+    Extrae todos los parámetros del modelo Keras y los exporta
+    en el formato esperado por CUDAInferenceEngine.
+
+    Estructura resultante:
+      conv2d/conv2d_1/conv2d_2/conv2d_3:
+        'weights' → (kernel_h, kernel_w, in_ch, out_ch)  float32
+        'bias'    → (out_ch,)                             float32
+
+ 
+
+--- code[20] (len=40) ---
+!pip install pycuda
+!>/var/colab/app.log
+
+--- code[21] (len=243) ---
+import pycuda.driver as cuda
+import pycuda.autoinit
+import pycuda.compiler
+import warnings
+warnings.filterwarnings('ignore')
+
+print("✓ PyCUDA importado exitosamente")
+print(f"CUDA disponible: {cuda.Device.count()} dispositivo(s) detectado(s)")
+
+--- code[22] (len=6406) ---
+# ==================== KERNELS CUDA COMPILADOS ====================
+CUDA_KERNELS_SOURCE = """
+extern "C" {
+  // Kernel de normalización global (0-1)
+  __global__ void normalize_kernel(
+      float *input,
+      float *output,
+      int total_elements
+  ) {
+      int idx = blockIdx.x * blockDim.x + threadIdx.x;
+      if (idx < total_elements) {
+          output[idx] = fmin(1.0f, fmax(0.0f, input[id
+

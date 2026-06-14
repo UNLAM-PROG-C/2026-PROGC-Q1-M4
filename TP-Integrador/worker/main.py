@@ -1,49 +1,80 @@
+import logging
 import pika
 import os
 import sys
 import json
-import random
+import numpy as np
 from datetime import datetime
 
+from predictor import Predictor
+
+_predictor = None
+
+logger = logging.getLogger(__name__)
+
+
 def log(msg: str):
+    """Imprime un mensaje con timestamp ISO y flush inmediato."""
     print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] {msg}", flush=True)
+
 
 RABBITMQ_HOST = os.getenv("RABBITMQ_HOST", "localhost")
 RABBITMQ_PORT = int(os.getenv("RABBITMQ_PORT", "5672"))
 RABBITMQ_USER = os.getenv("RABBITMQ_USER", "admin")
 RABBITMQ_PASS = os.getenv("RABBITMQ_PASS", "admin")
-QUEUE_NAME    = "image_queue"
-RESULT_QUEUE  = "result_queue"
+QUEUE_NAME = "image_queue"
 DELIVERY_MODE = 2
 CONNECTION_ATTEMPTS = 5
 RETRY_DELAY = 3
-LABELS = ["Gato", "Mesa", "Silla", "Laptop"]
+
+LABELS = [
+    'Remera', 'Pantalon', 'Sueter', 'Vestido', 'Abrigo',
+    'Sandalia', 'Camisa', 'Zapatilla', 'Bolso', 'Bota'
+]
 
 
 def analyze_image(image_bytes: bytes) -> list:
-    probabilities = [random.uniform(0, 100) for _ in LABELS]
-    total = sum(probabilities)
-    return [
-        {
-            "name": label,
-            "probability": round((prob / total) * 100, 2)
-        }
-        for label, prob in zip(LABELS, probabilities)
-    ]
+    """Recibe bytes de imagen, ejecuta predicción y devuelve lista formateada.
 
+    Args:
+        image_bytes: Bytes de la imagen a analizar.
 
-def publish_result(channel, results: list):
-    channel.queue_declare(queue=RESULT_QUEUE, durable=True)
-    channel.basic_publish(
-        exchange="",
-        routing_key=RESULT_QUEUE,
-        properties=pika.BasicProperties(delivery_mode=DELIVERY_MODE),
-        body=json.dumps(results)
-    )
-    log(f"Resultado publicado en '{RESULT_QUEUE}': {results}")
+    Returns:
+        Lista de dicts [{"name": str, "probability": float}, ...] con las 10 probabilidades.
+    """
+    global _predictor
+
+    try:
+        if _predictor is None:
+            log("[analyze_image] Inicializando Predictor...")
+            _predictor = Predictor()
+            log("[analyze_image] ✓ Predictor inicializado")
+
+        probabilities = _predictor.predict_image(image_bytes)
+
+        predicted_class = int(np.argmax(probabilities))
+        confidence = float(probabilities[predicted_class])
+        log(f"[analyze_image] Predicción: clase={predicted_class}, confianza={confidence:.2%}")
+
+        return [
+            {"name": LABELS[i], "probability": round(float(prob) * 100, 2)}
+            for i, prob in enumerate(probabilities)
+        ]
+
+    except Exception as e:
+        logger.error(f"[analyze_image] ERROR: {type(e).__name__}: {e}")
+        import traceback
+        traceback.print_exc()
+        return [{"name": label, "probability": 0.0} for label in LABELS]
 
 
 def callback(ch, method, properties, body):
+    """Callback de RabbitMQ: analiza la imagen y publica el resultado en reply_to.
+
+    Lee la imagen desde el cuerpo del mensaje, llama a analyze_image y
+    responde por la cola reply_to con el correlation_id correspondiente.
+    En caso de error, hace nack del mensaje sin reencolar.
+    """
     log(f"Mensaje recibido. Tamaño: {len(body)} bytes")
     try:
         results = analyze_image(body)
@@ -77,10 +108,12 @@ def callback(ch, method, properties, body):
         traceback.print_exc()
         ch.basic_nack(delivery_tag=method.delivery_tag, requeue=False)
     finally:
-        ch.stop_consuming()
+        #ch.stop_consuming()
+        pass
 
 
 def main():
+    """Configura la conexión a RabbitMQ, declara la cola e inicia el consumo de mensajes."""
     log("=== Worker iniciando ===")
     log(f"  RABBITMQ_HOST: {RABBITMQ_HOST}")
     log(f"  RABBITMQ_PORT: {RABBITMQ_PORT}")

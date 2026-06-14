@@ -1,10 +1,56 @@
-FROM python:3.12-slim
+# ==============================================================
+# STAGE 1 — builder
+# Necesita la imagen devel para compilar pycuda (headers CUDA + nvcc)
+# ==============================================================
+FROM nvidia/cuda:12.1.1-devel-ubuntu22.04 AS builder
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        python3 \
+        python3-pip \
+        python3-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /build
+COPY requirements.txt .
+RUN pip3 install --no-cache-dir -r requirements.txt
+
+
+# ==============================================================
+# STAGE 2 — runtime
+# Solo librerías CUDA en tiempo de ejecución, sin headers ni nvcc
+# ==============================================================
+FROM nvidia/cuda:12.1.1-runtime-ubuntu22.04
+
+ENV DEBIAN_FRONTEND=noninteractive \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        python3 \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copiar solo los paquetes Python instalados desde el builder
+COPY --from=builder /usr/local/lib/python3.10/dist-packages \
+                    /usr/local/lib/python3.10/dist-packages
+
+# Usuario no-root
+RUN adduser --disabled-password --gecos "" worker
 
 WORKDIR /app
 
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+# Código fuente
+COPY --chown=worker:worker cuda_inference.py \
+                            image_loader.py \
+                            main.py \
+                            predictor.py \
+                            ./
 
-COPY . .
+# Artefactos del modelo embebidos directamente
+COPY --chown=worker:worker kernels.fatbin model_params.pkl ./
 
-CMD ["python", "main.py"]
+USER worker
+
+# Ejecutar en modo unbuffered para ver logs en tiempo real
+CMD ["python3", "-u", "main.py"]

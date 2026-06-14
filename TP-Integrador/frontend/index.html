@@ -778,9 +778,12 @@
           <h3>Tecnologías utilizadas</h3>
           <p>
             La plataforma utiliza una arquitectura de microservicios completamente contenedorizada 
-            con Docker. Combina un frontend moderno en JavaScript con un backend en Java, interconectados de forma 
-            asíncrona mediante el broker de mensajería RabbitMQ hacia un motor de procesamiento en Python potenciado 
-            por el modelo de visión computacional YOLOv8.
+            con Docker Compose. El frontend en HTML/CSS/JavaScript vanilla se comunica con un backend en Java 
+            (HttpServer nativo), que encola las im&aacute;genes en RabbitMQ usando el patr&oacute;n reply-to con 
+            correlation ID. El worker en Python recibe las im&aacute;genes, las preprocesa en GPU (CUDA 12.1.1, 
+            PyCUDA) &mdash;grayscale, normalizaci&oacute;n e inversi&oacute;n&mdash; y ejecuta la inferencia con 
+            una CNN de 8 kernels CUDA (convoluci&oacute;n, ReLU, batch norm, max pooling, densas, softmax) 
+            entrenada sobre Fashion MNIST con TensorFlow/Keras.
           </p>
         </div>
       </div>
@@ -1147,16 +1150,6 @@
         });
         if (!res.ok) throw new Error('HTTP ' + res.status);
         const data = await res.json();
-
-        /* Simulación eliminada — respuesta real del worker via RabbitMQ
-        await new Promise((resolve) => setTimeout(resolve, 2000));
-        const data = [
-          { name: "Gato", probability: 85.3 },
-          { name: "Silla", probability: 42.7 },
-          { name: "Mesa", probability: 18.4 },
-          { name: "Laptop", probability: 9.2 },
-        ];
-        */
 
         clearInterval(msgIv);
         showResults(data);

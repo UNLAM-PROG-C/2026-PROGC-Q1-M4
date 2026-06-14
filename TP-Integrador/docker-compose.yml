@@ -48,6 +48,13 @@ services:
       rabbitmq:
         condition: service_healthy
     restart: unless-stopped
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
 
   rabbitmq:
     image: rabbitmq:3.13-management-alpine
