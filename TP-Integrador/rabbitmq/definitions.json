@@ -5,6 +5,15 @@
             "name": "/"
         }
     ],
+    "permissions": [
+        {
+            "user": "admin",
+            "vhost": "/",
+            "configure": ".*",
+            "write": ".*",
+            "read": ".*"
+        }
+    ],
     "queues": [
         {
             "name": "image_queue",
