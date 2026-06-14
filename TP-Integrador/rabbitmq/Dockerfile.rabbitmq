@@ -1,0 +1,9 @@
+FROM rabbitmq:3.13-management-alpine
+
+COPY definitions.json /etc/rabbitmq/definitions.json
+
+RUN echo '[rabbitmq_management].' > /etc/rabbitmq/enabled_plugins && \
+    echo 'management.load_definitions = /etc/rabbitmq/definitions.json' >> /etc/rabbitmq/rabbitmq.conf
+
+# Credenciales via variables de entorno al correr el contenedor:
+# -e RABBITMQ_DEFAULT_USER=... -e RABBITMQ_DEFAULT_PASS=...
