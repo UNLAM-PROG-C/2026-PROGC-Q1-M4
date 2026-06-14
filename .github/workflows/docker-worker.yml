@@ -1,11 +1,11 @@
-name: Build & Push Backend
+name: Build & Push Worker
 
 on:
   push:
     branches: [main, develop]
     paths:
-      - "backend/**"
-      - ".github/workflows/docker-backend.yml"
+      - "TP-Integrador/worker/**"
+      - ".github/workflows/docker-worker.yml"
 
 jobs:
   build-and-push:
@@ -22,9 +22,9 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v6
         with:
-          context: ./backend
-          file: ./backend/Dockerfile.backend
+          context: ./TP-Integrador/worker
+          file: ./TP-Integrador/worker/Dockerfile.worker
           push: true
           tags: |
-            holitest/tp-integrador-backend:latest
-            holitest/tp-integrador-backend:${{ github.sha }}
+            holitest/tp-integrador-worker:latest
+            holitest/tp-integrador-worker:${{ github.sha }}
