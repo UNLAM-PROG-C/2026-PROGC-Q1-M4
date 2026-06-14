@@ -67,8 +67,8 @@ spec:
         restartPolicy: Never
         containers:
           - name: worker
-            image: tp-integrador-worker:latest
-            imagePullPolicy: Never        # usa solo la imagen local del nodo
+            image: holitest/tp-integrador-worker:latest
+            imagePullPolicy: Always
             env:
               - name: RABBITMQ_HOST
                 value: "host.docker.internal"

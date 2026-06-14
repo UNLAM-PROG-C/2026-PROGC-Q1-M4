@@ -791,6 +791,7 @@
   </div>
 
   <script>
+    const BACKEND_URL = window.BACKEND_URL || "http://localhost:3001";
     const canvas = document.getElementById("particles");
     const ctx = canvas.getContext("2d");
     let W,
@@ -1140,7 +1141,7 @@
       form.append("image", currentFile);
 
       try {
-        const res = await fetch('http://localhost:3001/analyze', {
+        const res = await fetch(`${BACKEND_URL}/analyze`, {
           method: 'POST',
           body: form
         });
@@ -1177,7 +1178,7 @@
     // ── Health check ───────────────────────────────────────────────────────────────
     const aiIndicator = document.getElementById("aiIndicator");
     const aiLabel = document.getElementById("aiLabel");
-    const HEALTH_URL = "http://localhost:3001/health";
+    const HEALTH_URL = `${BACKEND_URL}/health`;
     const POLL_INTERVAL = 10000; // cada 10 segundos
 
     function setAiStatus(status) {
