@@ -703,7 +703,7 @@
       <div id="drop-placeholder">
         <span class="drop-icon">🖼️</span>
         <p class="drop-title">Arrastrá tu imagen aquí</p>
-        <p class="drop-sub">O hacé clic para explorar archivos</p>
+        <p class="drop-sub">O hacé clic para explorar archivos · <kbd style="background:rgba(167,139,250,0.12);border:1px solid rgba(167,139,250,0.3);border-radius:4px;padding:0.1rem 0.4rem;font-size:0.8rem;color:var(--neon1)">Ctrl+V</kbd> para pegar</p>
         <span class="drop-hint" id="browseBtn">Seleccionar archivo</span>
       </div>
       <div id="preview-container" style="display: none">
@@ -1162,6 +1162,17 @@
     }
 
     analyzeBtn.addEventListener("click", analyze);
+
+    document.addEventListener("paste", (e) => {
+      const items = (e.clipboardData || e.originalEvent.clipboardData).items;
+      for (const item of items) {
+        if (item.type.startsWith("image/")) {
+          const file = item.getAsFile();
+          if (file) loadImage(file);
+          break;
+        }
+      }
+    });
 
     document.getElementById("idleState").style.display = "flex";
     document.getElementById("loadingState").style.display = "none";

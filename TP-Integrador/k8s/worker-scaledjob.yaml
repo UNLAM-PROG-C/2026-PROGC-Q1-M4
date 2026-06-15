@@ -21,7 +21,7 @@ metadata:
   namespace: tp-integrador
 type: Opaque
 stringData:
-  host: "amqp://admin:admin@host.docker.internal:30672/"
+  host: "amqp://admin:admin@tp-integrador-rabbitmq.brazilsouth.azurecontainer.io:5672/"
 
 ---
 apiVersion: keda.sh/v1alpha1
@@ -71,9 +71,9 @@ spec:
             imagePullPolicy: Always
             env:
               - name: RABBITMQ_HOST
-                value: "host.docker.internal"
+                value: "tp-integrador-rabbitmq.brazilsouth.azurecontainer.io"
               - name: RABBITMQ_PORT
-                value: "30672"
+                value: "5672"
               - name: RABBITMQ_USER
                 value: "admin"
               - name: RABBITMQ_PASS
