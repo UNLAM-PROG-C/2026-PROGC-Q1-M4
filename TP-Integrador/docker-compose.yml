@@ -11,6 +11,11 @@ services:
           target: /usr/share/nginx/html/index.html
     ports:
       - "8080:80"
+    environment:
+      # El navegador resuelve "localhost" primero a IPv6 (::1), que el proxy de
+      # Docker Desktop en Windows no reenvia al contenedor y provoca el timeout
+      # del health check. Forzamos IPv4 para que llegue al backend publicado.
+      BACKEND_URL: "http://127.0.0.1:3001"
     restart: unless-stopped
 
   backend:
