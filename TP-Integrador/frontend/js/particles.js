@@ -1,14 +1,10 @@
-const canvas = document.getElementById("particles");
+const canvas = document.getElementById(ID_PARTICLES);
 const ctx = canvas.getContext("2d");
 let W,
   H,
   particles = [],
   animFrame;
-let mode = "idle";
-
-const MODE_IDLE = "idle";
-const MODE_LOADING = "loading";
-const MODE_DONE = "done";
+let mode = MODE_IDLE;
 
 const COLORS = ["#a78bfa", "#34d399", "#60a5fa", "#f472b6", "#fbbf24"];
 
@@ -52,7 +48,7 @@ function resize() {
   H = canvas.height = window.innerHeight;
 }
 resize();
-window.addEventListener("resize", resize);
+window.addEventListener(EVENT_RESIZE, resize);
 
 function toHexByte(value) {
   return Math.floor(value).toString(HEX_RADIX).padStart(HEX_PADDING, "0");
@@ -62,8 +58,10 @@ function Particle(fast) {
   this.reset = function (fast) {
     this.x = Math.random() * W;
     this.y = Math.random() * H;
-    this.vx = (Math.random() - CENTER_OFFSET) * (fast ? FAST_SPEED : SLOW_SPEED);
-    this.vy = (Math.random() - CENTER_OFFSET) * (fast ? FAST_SPEED : SLOW_SPEED);
+    this.vx =
+      (Math.random() - CENTER_OFFSET) * (fast ? FAST_SPEED : SLOW_SPEED);
+    this.vy =
+      (Math.random() - CENTER_OFFSET) * (fast ? FAST_SPEED : SLOW_SPEED);
     this.r = Math.random() * (fast ? FAST_RADIUS : SLOW_RADIUS) + MIN_RADIUS;
     this.alpha = Math.random() * ALPHA_RANGE + MIN_ALPHA;
     this.color = COLORS[Math.floor(Math.random() * COLORS.length)];
@@ -149,7 +147,8 @@ function drawLink(a, b, dist) {
   ctx.beginPath();
   ctx.moveTo(a.x, a.y);
   ctx.lineTo(b.x, b.y);
-  ctx.strokeStyle = a.color + toHexByte((1 - dist / LINK_DISTANCE) * LINK_ALPHA_SCALE);
+  ctx.strokeStyle =
+    a.color + toHexByte((1 - dist / LINK_DISTANCE) * LINK_ALPHA_SCALE);
   ctx.lineWidth = LINK_WIDTH;
   ctx.stroke();
 }

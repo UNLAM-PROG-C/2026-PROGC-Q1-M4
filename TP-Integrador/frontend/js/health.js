@@ -1,19 +1,7 @@
-const aiIndicator = document.getElementById("aiIndicator");
-const aiLabel = document.getElementById("aiLabel");
-const HEALTH_URL = `${BACKEND_URL}/health`;
+const aiIndicator = document.getElementById(ID_AI_INDICATOR);
+const aiLabel = document.getElementById(ID_AI_LABEL);
 const POLL_INTERVAL = 10000; // cada 10 segundos
 const HEALTH_TIMEOUT_MS = 4000;
-
-const STATUS_CHECKING = "checking";
-const STATUS_ONLINE = "online";
-const STATUS_OFFLINE = "offline";
-const HEALTH_OK = "ok";
-
-const AI_LABELS = {
-  checking: "Verificando motor...",
-  online: "Motor de IA activo",
-  offline: "Motor de IA apagado",
-};
 
 function setAiStatus(status) {
   aiIndicator.classList.remove(STATUS_CHECKING, STATUS_OFFLINE);

@@ -34,12 +34,12 @@ function getPctColor(pct) {
 
 function buildResultItem(item, index, pct) {
   const div = document.createElement("div");
-  div.className = "result-item";
+  div.className = CLASS_RESULT_ITEM;
   div.style.animationDelay = index * ITEM_ANIM_STEP + "s";
   div.innerHTML = `
       <span class="result-name">${item.name}</span>
       <div class="result-bar-wrap">
-        <div class="result-bar" id="bar${index}" style="background: ${getBarColor(pct)}"></div>
+        <div class="result-bar" id="${RESULT_BAR_ID_PREFIX}${index}" style="background: ${getBarColor(pct)}"></div>
       </div>
       <span class="result-pct" style="color:${getPctColor(pct)}">${pct.toFixed(PCT_DECIMALS)}%</span>
     `;
@@ -47,17 +47,22 @@ function buildResultItem(item, index, pct) {
 }
 
 function animateBarFill(index, pct) {
-  setTimeout(() => {
-    const bar = document.getElementById("bar" + index);
-    if (bar) bar.style.width = Math.min(pct, MAX_PERCENT) + "%";
-  }, BAR_FILL_BASE_DELAY_MS + index * BAR_FILL_STEP_MS);
+  setTimeout(
+    () => {
+      const bar = document.getElementById(RESULT_BAR_ID_PREFIX + index);
+      if (bar) bar.style.width = Math.min(pct, MAX_PERCENT) + "%";
+    },
+    BAR_FILL_BASE_DELAY_MS + index * BAR_FILL_STEP_MS,
+  );
 }
 
 function renderResults(data) {
-  const list = document.getElementById("resultsList");
+  const list = document.getElementById(ID_RESULTS_LIST);
   list.innerHTML = "";
-  document.getElementById("resultsCount").textContent =
-    data.length + " resultado" + (data.length !== 1 ? "s" : "");
+  document.getElementById(ID_RESULTS_COUNT).textContent =
+    data.length +
+    RESULT_LABEL_SINGULAR +
+    (data.length !== 1 ? RESULT_LABEL_PLURAL_SUFFIX : "");
 
   const sorted = [...data].sort((a, b) => b.probability - a.probability);
   sorted.forEach((item, i) => {

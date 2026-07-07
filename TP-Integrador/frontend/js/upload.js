@@ -1,87 +1,81 @@
-const dropZone = document.getElementById("dropZone");
-const fileInput = document.getElementById("fileInput");
-const browseBtn = document.getElementById("browseBtn");
-const clearBtn = document.getElementById("clearBtn");
-const loadAnotherBtn = document.getElementById("loadAnotherBtn");
-const preview = document.getElementById("preview");
-const previewName = document.getElementById("previewName");
-const previewContainer = document.getElementById("preview-container");
-const previewActions = document.getElementById(
-  "preview-actions-container",
-);
-const dropPlaceholder = document.getElementById("drop-placeholder");
-const analyzeBtn = document.getElementById("analyzeBtn");
+const dropZone = document.getElementById(ID_DROP_ZONE);
+const fileInput = document.getElementById(ID_FILE_INPUT);
+const browseBtn = document.getElementById(ID_BROWSE_BTN);
+const clearBtn = document.getElementById(ID_CLEAR_BTN);
+const loadAnotherBtn = document.getElementById(ID_LOAD_ANOTHER_BTN);
+const preview = document.getElementById(ID_PREVIEW);
+const previewName = document.getElementById(ID_PREVIEW_NAME);
+const previewContainer = document.getElementById(ID_PREVIEW_CONTAINER);
+const previewActions = document.getElementById(ID_PREVIEW_ACTIONS_CONTAINER);
+const dropPlaceholder = document.getElementById(ID_DROP_PLACEHOLDER);
+const analyzeBtn = document.getElementById(ID_ANALYZE_BTN);
 
 let currentFile = null;
-
-const IMAGE_MIME_PREFIX = "image/";
-const BYTES_PER_KB = 1024;
-const KB_DECIMALS = 1;
-
-const DISPLAY_NONE = "none";
-const DISPLAY_BLOCK = "block";
-const DISPLAY_FLEX = "flex";
 
 function loadImage(file) {
   if (!file || !file.type.startsWith(IMAGE_MIME_PREFIX)) return;
   currentFile = file;
   preview.src = URL.createObjectURL(file);
   previewName.textContent =
-    file.name + " (" + (file.size / BYTES_PER_KB).toFixed(KB_DECIMALS) + " KB)";
+    file.name +
+    " (" +
+    (file.size / BYTES_PER_KB).toFixed(KB_DECIMALS) +
+    FILE_SIZE_UNIT +
+    ")";
   dropPlaceholder.style.display = DISPLAY_NONE;
   previewContainer.style.display = DISPLAY_BLOCK;
   previewActions.style.display = DISPLAY_FLEX;
-  dropZone.classList.add("has-image");
+  dropZone.classList.add(CLASS_HAS_IMAGE);
   analyzeBtn.disabled = false;
   showIdle();
 }
 
-dropZone.addEventListener("click", (e) => {
+dropZone.addEventListener(EVENT_CLICK, (e) => {
   if (currentFile) return;
   if (
     e.target === browseBtn ||
     e.target === dropZone ||
-    e.target.closest("#drop-placeholder")
+    e.target.closest(`#${ID_DROP_PLACEHOLDER}`)
   )
     fileInput.click();
 });
-browseBtn.addEventListener("click", (e) => {
+browseBtn.addEventListener(EVENT_CLICK, (e) => {
   e.stopPropagation();
   fileInput.click();
 });
-fileInput.addEventListener("change", () => {
+fileInput.addEventListener(EVENT_CHANGE, () => {
   if (fileInput.files[0]) loadImage(fileInput.files[0]);
 });
 
-dropZone.addEventListener("dragover", (e) => {
+dropZone.addEventListener(EVENT_DRAGOVER, (e) => {
   e.preventDefault();
-  dropZone.classList.add("dragover");
+  dropZone.classList.add(CLASS_DRAGOVER);
 });
-dropZone.addEventListener("dragleave", () =>
-  dropZone.classList.remove("dragover"),
+dropZone.addEventListener(EVENT_DRAGLEAVE, () =>
+  dropZone.classList.remove(CLASS_DRAGOVER),
 );
-dropZone.addEventListener("drop", (e) => {
+dropZone.addEventListener(EVENT_DROP, (e) => {
   e.preventDefault();
-  dropZone.classList.remove("dragover");
+  dropZone.classList.remove(CLASS_DRAGOVER);
   const file = e.dataTransfer.files[0];
   if (file) loadImage(file);
 });
 
-clearBtn.addEventListener("click", () => {
+clearBtn.addEventListener(EVENT_CLICK, () => {
   currentFile = null;
   preview.src = "";
   fileInput.value = "";
   dropPlaceholder.style.display = DISPLAY_BLOCK;
   previewContainer.style.display = DISPLAY_NONE;
   previewActions.style.display = DISPLAY_NONE;
-  dropZone.classList.remove("has-image");
+  dropZone.classList.remove(CLASS_HAS_IMAGE);
   analyzeBtn.disabled = true;
   showIdle();
 });
 
-loadAnotherBtn.addEventListener("click", () => fileInput.click());
+loadAnotherBtn.addEventListener(EVENT_CLICK, () => fileInput.click());
 
-document.addEventListener("paste", (e) => {
+document.addEventListener(EVENT_PASTE, (e) => {
   const items = (e.clipboardData || e.originalEvent.clipboardData).items;
   for (const item of items) {
     if (item.type.startsWith(IMAGE_MIME_PREFIX)) {
