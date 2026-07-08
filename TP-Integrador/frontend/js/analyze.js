@@ -67,7 +67,7 @@ function setupNeuralGrid() {
   }, NEURAL_TICK_MS);
 }
 
-const LOADING_TEXT_INTERVAL_MS = 900;
+const LOADING_TEXT_INTERVAL_MS = 1500;
 let msgIdx = 0,
   msgIv;
 function animateLoadingText() {

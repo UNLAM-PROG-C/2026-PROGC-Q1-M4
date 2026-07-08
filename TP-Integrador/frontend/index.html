@@ -1,131 +1,162 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Trabajo Integrador Grupo M4</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
 
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Trabajo Integrador Grupo M4</title>
-  <link rel="stylesheet" href="styles.css" />
-</head>
+  <body>
+    <canvas id="particles"></canvas>
 
-<body>
-  <canvas id="particles"></canvas>
+    <div class="wrapper">
+      <header>
+        <div class="badge">✦ Vision AI ✦</div>
+        <h1>IdentifAI<br /></h1>
+        <p class="subtitle">
+          Reconocimiento de objetos con Inteligencia Artificial
+        </p>
+        <div class="ai-indicator checking" id="aiIndicator">
+          <div class="ai-dot"></div>
+          <div class="ai-dot"></div>
+          <div class="ai-dot"></div>
+          <span class="ai-label" id="aiLabel">Verificando motor...</span>
+        </div>
+      </header>
 
-  <div class="wrapper">
-    <header>
-      <div class="badge">✦ Vision AI ✦</div>
-      <h1>IdentifAI<br /></h1>
-      <p class="subtitle">
-        Reconocimiento de objetos con Inteligencia Artificial
-      </p>
-      <div class="ai-indicator checking" id="aiIndicator">
-        <div class="ai-dot"></div>
-        <div class="ai-dot"></div>
-        <div class="ai-dot"></div>
-        <span class="ai-label" id="aiLabel">Verificando motor...</span>
+      <div class="drop-zone" id="dropZone">
+        <div id="drop-placeholder">
+          <span class="drop-icon">🖼️</span>
+          <p class="drop-title">Arrastrá tu imagen aquí</p>
+          <p class="drop-sub">
+            O hacé clic para explorar archivos ·
+            <kbd
+              style="
+                background: rgba(167, 139, 250, 0.12);
+                border: 1px solid rgba(167, 139, 250, 0.3);
+                border-radius: 4px;
+                padding: 0.1rem 0.4rem;
+                font-size: 0.8rem;
+                color: var(--neon1);
+              "
+              >Ctrl+V</kbd
+            >
+            para pegar
+          </p>
+          <span class="drop-hint" id="browseBtn">Seleccionar archivo</span>
+        </div>
+        <div id="preview-container" style="display: none">
+          <img id="preview" src="" alt="Preview" />
+          <p class="preview-name" id="previewName"></p>
+        </div>
+        <input type="file" id="fileInput" accept="image/*" />
       </div>
-    </header>
 
-    <div class="drop-zone" id="dropZone">
-      <div id="drop-placeholder">
-        <span class="drop-icon">🖼️</span>
-        <p class="drop-title">Arrastrá tu imagen aquí</p>
-        <p class="drop-sub">O hacé clic para explorar archivos · <kbd style="background:rgba(167,139,250,0.12);border:1px solid rgba(167,139,250,0.3);border-radius:4px;padding:0.1rem 0.4rem;font-size:0.8rem;color:var(--neon1)">Ctrl+V</kbd> para pegar</p>
-        <span class="drop-hint" id="browseBtn">Seleccionar archivo</span>
+      <div
+        class="preview-actions"
+        id="preview-actions-container"
+        style="display: none"
+      >
+        <button class="btn-load" id="loadAnotherBtn">
+          📁 Cargar otra imagen
+        </button>
+        <button class="btn-clear" id="clearBtn">✕ Limpiar</button>
       </div>
-      <div id="preview-container" style="display: none">
-        <img id="preview" src="" alt="Preview" />
-        <p class="preview-name" id="previewName"></p>
-      </div>
-      <input type="file" id="fileInput" accept="image/*" />
-    </div>
 
-    <div class="preview-actions" id="preview-actions-container" style="display: none">
-      <button class="btn-load" id="loadAnotherBtn">
-        📁 Cargar otra imagen
+      <button class="analyze-btn-main" id="analyzeBtn" disabled>
+        ⚡ Analizar con IA
       </button>
-      <button class="btn-clear" id="clearBtn">✕ Limpiar</button>
-    </div>
 
-    <button class="analyze-btn-main" id="analyzeBtn" disabled>
-      ⚡ Analizar con IA
-    </button>
-
-    <div class="state-panel" id="statePanel">
-      <div class="idle-state" id="idleState">
-        <div style="display: flex; justify-content: center; align-items: center;font-size: 40px;">🧠</div>
-        <div style="display: flex; justify-content: center; align-items: center;">
-          <p>Subí una imagen para comenzar el análisis</p>
-        </div>
-      </div>
-      <div class="loading-state" id="loadingState" style="display: none">
-        <div class="neural-grid" id="neuralGrid"></div>
-        <div class="loading-bars">
-          <div class="loading-bar">
-            <div class="loading-bar-fill"></div>
+      <div class="state-panel" id="statePanel">
+        <div class="idle-state" id="idleState">
+          <div
+            style="
+              display: flex;
+              justify-content: center;
+              align-items: center;
+              font-size: 40px;
+            "
+          >
+            🧠
           </div>
-          <div class="loading-bar">
-            <div class="loading-bar-fill"></div>
-          </div>
-          <div class="loading-bar">
-            <div class="loading-bar-fill"></div>
+          <div
+            style="display: flex; justify-content: center; align-items: center"
+          >
+            <p>Subí una imagen para comenzar el análisis</p>
           </div>
         </div>
-        <p class="loading-text" id="loadingText">Procesando imagen...</p>
-      </div>
-      <div class="results-state" id="resultsState" style="display: none">
-        <div class="results-header">
-          <span class="results-title">✦ Objetos detectados</span>
-          <span class="results-count" id="resultsCount">0 resultados</span>
+        <div class="loading-state" id="loadingState" style="display: none">
+          <div class="neural-grid" id="neuralGrid"></div>
+          <div class="loading-bars">
+            <div class="loading-bar">
+              <div class="loading-bar-fill"></div>
+            </div>
+            <div class="loading-bar">
+              <div class="loading-bar-fill"></div>
+            </div>
+            <div class="loading-bar">
+              <div class="loading-bar-fill"></div>
+            </div>
+          </div>
+          <p class="loading-text" id="loadingText">Procesando imagen...</p>
         </div>
-        <div id="resultsList"></div>
-      </div>
-      <div class="error-state" id="errorState" style="display: none">
-        <div class="error-icon">⚠️</div>
-        <p class="error-msg" id="errorMsg">
-          Error al conectar con el servidor
-        </p>
-        <p class="error-sub">
-          Verificá que el backend esté corriendo en localhost:3001
-        </p>
-      </div>
-    </div>
-
-    <footer>
-      <div class="footer-grid">
-        <div class="footer-section">
-          <h3>Sobre el proyecto</h3>
-          <p>
-            <strong>IdentifAI</strong> es una plataforma web distribuida y de alta disponibilidad diseñada para el reconocimiento automático 
-            de objetos en imágenes utilizando Inteligencia Artificial. La aplicación permite a los usuarios cargar archivos 
-            multimedia de manera intuitiva y recibir un análisis preciso en tiempo real.
+        <div class="results-state" id="resultsState" style="display: none">
+          <div class="results-header">
+            <span class="results-title">✦ Objetos detectados</span>
+            <span class="results-count" id="resultsCount">0 resultados</span>
+          </div>
+          <div id="resultsList"></div>
+        </div>
+        <div class="error-state" id="errorState" style="display: none">
+          <div class="error-icon">⚠️</div>
+          <p class="error-msg" id="errorMsg">
+            Error al conectar con el servidor
           </p>
-        </div>
-        <div class="footer-section">
-          <h3>Tecnologías utilizadas</h3>
-          <p>
-            La plataforma utiliza una arquitectura de microservicios completamente contenedorizada 
-            con Docker Compose. El frontend en HTML/CSS/JavaScript vanilla se comunica con un backend en Java 
-            (HttpServer nativo), que encola las im&aacute;genes en RabbitMQ usando el patr&oacute;n reply-to con 
-            correlation ID. El worker en Python recibe las im&aacute;genes, las preprocesa en GPU (CUDA 12.1.1, 
-            PyCUDA) &mdash;grayscale, normalizaci&oacute;n e inversi&oacute;n&mdash; y ejecuta la inferencia con 
-            una CNN de 8 kernels CUDA (convoluci&oacute;n, ReLU, batch norm, max pooling, densas, softmax) 
-            entrenada sobre Fashion MNIST con TensorFlow/Keras.
+          <p class="error-sub">
+            Verificá que el backend esté corriendo en localhost:3001
           </p>
         </div>
       </div>
-      <div class="footer-copy">
-        Trabajo Integrador &mdash; Grupo M4 &mdash; Hecho con <span>♥</span>
-      </div>
-    </footer>
-  </div>
 
-  <script src="js/consts.js"></script>
-  <script src="js/particles.js"></script>
-  <script src="js/upload.js"></script>
-  <script src="js/results.js"></script>
-  <script src="js/analyze.js"></script>
-  <script src="js/health.js"></script>
-</body>
+      <footer>
+        <div class="footer-grid">
+          <div class="footer-section">
+            <h3>Sobre el proyecto</h3>
+            <p>
+              <strong>IdentifAI</strong> es una plataforma web distribuida y de
+              alta disponibilidad diseñada para el reconocimiento automático de
+              objetos en imágenes utilizando Inteligencia Artificial. La
+              aplicación permite a los usuarios cargar archivos multimedia de
+              manera intuitiva y recibir un análisis preciso en tiempo real.
+            </p>
+          </div>
+          <div class="footer-section">
+            <h3>Tecnologías utilizadas</h3>
+            <p>
+              La plataforma utiliza una arquitectura de microservicios
+              completamente contenedorizada con Docker Compose. El frontend en
+              HTML/CSS/JavaScript vanilla se comunica con un backend en Java
+              (HttpServer nativo), que encola las im&aacute;genes en RabbitMQ
+              usando el patr&oacute;n reply-to con correlation ID. El worker en
+              Python recibe las im&aacute;genes, las preprocesa en GPU (CUDA
+              12.1.1, PyCUDA) &mdash;grayscale, normalizaci&oacute;n e
+              inversi&oacute;n&mdash; y ejecuta la inferencia con una CNN de 8
+              kernels CUDA (convoluci&oacute;n, ReLU, batch norm, max pooling,
+              densas, softmax) entrenada sobre Fashion MNIST con
+              TensorFlow/Keras.
+            </p>
+          </div>
+        </div>
+        <div class="footer-copy">Trabajo Integrador &mdash; Grupo M4</span></div>
+      </footer>
+    </div>
 
+    <script src="js/consts.js"></script>
+    <script src="js/particles.js"></script>
+    <script src="js/upload.js"></script>
+    <script src="js/results.js"></script>
+    <script src="js/analyze.js"></script>
+    <script src="js/health.js"></script>
+  </body>
 </html>
